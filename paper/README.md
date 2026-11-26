@@ -3,7 +3,7 @@
 **SupplyShield: Detecting Malicious Behaviour in Open-Source Packages Before Installation**
 Pahuldeep Singh Sodhi, TIET. Springer LNCS format, 8 pages.
 
-### ðŸ“„ [Read the article (PDF)](SupplyShield.pdf)
+### 📄 [Read the article (PDF)](SupplyShield.pdf)
 
 | File | Contents |
 |---|---|
@@ -12,7 +12,7 @@ Pahuldeep Singh Sodhi, TIET. Springer LNCS format, 8 pages.
 | [`references.bib`](references.bib) | The 6 references |
 | [`supplyshield-overleaf.zip`](supplyshield-overleaf.zip) | `main.tex` + `references.bib`, ready for Overleaf |
 
-**Rebuild:** in Overleaf choose *New Project â†’ Upload Project*, upload `supplyshield-overleaf.zip`, and compile
+**Rebuild:** in Overleaf choose *New Project → Upload Project*, upload `supplyshield-overleaf.zip`, and compile
 with pdfLaTeX. If Overleaf reports a missing `llncs.cls`, start from Overleaf's *Springer LNCS* template and paste
 these files in.
 
