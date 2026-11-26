@@ -29,7 +29,7 @@ the code it analyses, needs **no dependencies** (Python standard library only), 
 ## Install and use
 
 ```bash
-git clone https://github.com/<your-username>/supplyshield.git
+git clone https://github.com/PahuldeepSinghSodhi/supplyshield.git
 cd supplyshield
 pip install -e .            # or run without installing: python -m supplyshield ...
 
@@ -103,6 +103,11 @@ paper/          LNCS article source (Overleaf)
 
 The test samples imitate real attacks but are inert: network addresses use the reserved `.invalid` domain
 and payloads only print a message. Never install them. Use SupplyShield only on code you are allowed to analyse.
+
+## Author
+
+Pahuldeep Singh Sodhi (Roll No. 102306051), Thapar Institute of Engineering and Technology (TIET).
+Cybersecurity course project, instructor: Dr. Rohit Ahuja.
 
 ## License
 

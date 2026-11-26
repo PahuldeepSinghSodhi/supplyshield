@@ -19,11 +19,10 @@
 \title{SupplyShield: Detecting Malicious Behaviour in Open-Source Packages Before Installation}
 \titlerunning{SupplyShield}
 
-\author{[Your Name]\inst{1}}
-\authorrunning{[Your Name]}
-\institute{[Department], [College / University], [City], [Country]\\
-\email{[your.email@college.edu]}\\
-Roll No.: [Roll Number] \quad Course: Cybersecurity \quad Instructor: [Professor's Name]}
+\author{Pahuldeep Singh Sodhi\inst{1}}
+\authorrunning{P. S. Sodhi}
+\institute{Thapar Institute of Engineering and Technology (TIET), Patiala, India\\
+Roll No.: 102306051 \quad Course: Cybersecurity \quad Instructor: Dr.\ Rohit Ahuja}
 
 \maketitle
 
@@ -48,7 +47,7 @@ Real incidents show the damage. In 2018 a new maintainer of the popular npm pack
   \item A review of open-source supply chain attacks and of existing detection research and tools (Section~\ref{sec:lit}).
   \item \emph{SupplyShield}, an open-source static analyser for PyPI and npm packages that never installs or executes the code it inspects, requires no third-party dependencies, and explains every finding (Section~\ref{sec:tech}).
   \item Two features that address gaps in the free tools most developers use: \emph{version-diff analysis}, which reports behaviour newly introduced by an update, and \emph{attack-chain scoring}, which rates dangerous combinations of signals.
-  \item An evaluation on a labelled, inert test corpus comparing SupplyShield with \texttt{pip-audit}, \texttt{npm audit} and Bandit (Section~\ref{sec:eval}). Code, corpus and evaluation scripts are published on GitHub.\footnote{\url{https://github.com/[your-username]/supplyshield}}
+  \item An evaluation on a labelled, inert test corpus comparing SupplyShield with \texttt{pip-audit}, \texttt{npm audit} and Bandit (Section~\ref{sec:eval}). Code, corpus and evaluation scripts are published on GitHub.\footnote{\url{https://github.com/PahuldeepSinghSodhi/supplyshield}}
 \end{enumerate}
 
 %=====================================================================
