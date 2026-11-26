@@ -1,86 +1,64 @@
 \documentclass[runningheads]{llncs}
 
 \usepackage[T1]{fontenc}
-\usepackage{graphicx}
 \usepackage{amssymb}
 \usepackage{booktabs}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta,positioning,fit}
+\usetikzlibrary{arrows.meta,positioning}
 \usepackage{xcolor}
-\usepackage{listings}
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}  % hidelinks: no coloured boxes around links and citations
 \usepackage{url}
-
-\lstset{basicstyle=\ttfamily\scriptsize,breaklines=true,frame=single,columns=fullflexible}
-\renewcommand\UrlFont{\color{blue}\rmfamily}
 
 \begin{document}
 
 \title{SupplyShield: Detecting Malicious Behaviour in Open-Source Packages Before Installation}
 \titlerunning{SupplyShield}
 
-\author{Pahuldeep Singh Sodhi\inst{1}}
-\authorrunning{P. S. Sodhi}
+\author{Pahuldeep Singh Sodhi}
+\authorrunning{Pahuldeep}
 \institute{Thapar Institute of Engineering and Technology (TIET), Patiala, India\\
 Roll No.: 102306051 \quad Course: Cybersecurity \quad Instructor: Dr.\ Rohit Ahuja}
 
 \maketitle
 
 \begin{abstract}
-Modern applications are assembled from hundreds of open-source packages downloaded from public registries such as PyPI and npm. Attackers exploit this trust by publishing malicious packages or by poisoning updates of popular ones, as in the event-stream (2018), ua-parser-js (2021) and XZ Utils (2024) incidents. The free tools most developers rely on, such as \texttt{pip-audit} and \texttt{npm audit}, compare dependencies against databases of \emph{already known} vulnerabilities and therefore report a brand-new malicious package as clean. This article reviews the research on software supply chain attacks and their detection, and presents \emph{SupplyShield}, a lightweight, dependency-free static analyser for PyPI and npm packages. SupplyShield inspects what a package's code does before it is installed: install-time execution, hidden payloads, credential access, network and process activity, and typosquatted names. It adds two features aimed at gaps in common free tools: a \emph{version-diff} analysis that isolates behaviour introduced by an update, and \emph{attack-chain scoring} that rates combinations of signals rather than single ones, with a plain-language explanation for every finding. On a labelled corpus of 20 inert packages, SupplyShield detected 10 of 12 malicious samples with one false alarm, while \texttt{pip-audit} and \texttt{npm audit} detected none and the general-purpose analyser Bandit detected 3 of 6 Python samples.
+Modern applications are assembled from hundreds of open-source packages downloaded from registries such as PyPI and npm. Attackers exploit this trust by publishing malicious packages or by poisoning updates of popular ones. The free tools most developers rely on, such as \texttt{pip-audit} and \texttt{npm audit}, compare dependencies against databases of \emph{already known} vulnerabilities, so they report a brand-new malicious package as clean. This article reviews research on software supply chain attacks and presents \emph{SupplyShield}, a lightweight, dependency-free static analyser for PyPI and npm packages. It inspects what a package's code does before installation and adds two features aimed at gaps in common free tools: \emph{version-diff analysis}, which isolates behaviour introduced by an update, and \emph{attack-chain scoring}, which rates combinations of signals rather than single ones. On a labelled corpus of 20 inert packages, SupplyShield detected 10 of 12 malicious samples with one false alarm. \texttt{pip-audit} and \texttt{npm audit} detected none, and the general-purpose analyser Bandit detected 3 of 6 Python samples.
 
-\keywords{Software supply chain security \and Malicious packages \and Static analysis \and PyPI \and npm \and Typosquatting}
+\keywords{Software supply chain security \and Malicious packages \and Static analysis \and PyPI \and npm}
 \end{abstract}
 
 %=====================================================================
 \section{Introduction}
 %=====================================================================
 
-Almost every piece of software people use daily, from banking apps to messaging services, is built on open-source packages. A single \texttt{pip install} or \texttt{npm install} command can pull in dozens of transitive dependencies written by strangers, and installing a package may run its code immediately, with the full permissions of the developer or build server. This makes the package ecosystem an attractive target: compromising one widely used package can reach thousands of downstream projects at once.
+Almost every piece of software people use daily, from banking apps to messaging services, is built on open-source packages. A single \texttt{pip install} or \texttt{npm install} can pull in dozens of packages written by strangers, and installing a package may run its code immediately with the developer's full permissions. Compromising one widely used package can therefore reach thousands of downstream projects at once.
 
-Real incidents show the damage. In 2018 a new maintainer of the popular npm package \texttt{event-stream} added a dependency, \texttt{flatmap-stream}, whose minified code targeted a Bitcoin wallet application to steal private keys~\cite{npm_eventstream}. In October 2021 the npm account of the maintainer of \texttt{ua-parser-js} was hijacked and malicious versions were published that installed a cryptocurrency miner and harvested credentials; the U.S.\ Cybersecurity and Infrastructure Security Agency issued an alert~\cite{cisa_uaparser}. In March 2024 a backdoor was discovered in XZ Utils 5.6.0 and 5.6.1, a compression library present in most Linux systems, after a contributor had spent years gaining the project's trust (CVE-2024-3094, rated CVSS 10)~\cite{nvd_xz}. At a policy level, the U.S.\ Executive Order 14028 of May 2021 directed NIST to develop software supply chain security standards following the SolarWinds compromise~\cite{eo14028}.
+Real incidents show the damage. In 2018 a new maintainer of the npm package \texttt{event-stream} added a dependency whose hidden code stole Bitcoin wallet keys. In 2021 the npm account of the maintainer of \texttt{ua-parser-js} was hijacked, and malicious versions installed a cryptocurrency miner and stole credentials. In 2024 a backdoor was found in XZ Utils 5.6.0 and 5.6.1, a compression library present in most Linux systems, planted by a contributor who had spent years earning the project's trust (CVE-2024-3094, CVSS 10)~\cite{nvd_xz}. All three arrived as updates to packages users already trusted.
 
-\paragraph{The problem.} The defences most developers actually use are free tools built into their workflow: \texttt{pip-audit}~\cite{pipaudit}, \texttt{npm audit}~\cite{npmaudit} and GitHub Dependabot. These tools answer the question \emph{``Is this version listed in a vulnerability database?''} That is valuable for known bugs, but a newly published malicious package or a freshly poisoned update is, by definition, not in any database yet. The window between publication and listing is exactly when supply chain attacks succeed.
+\paragraph{The problem.} The defences most developers actually use are free tools built into their workflow: \texttt{pip-audit}, \texttt{npm audit} and GitHub Dependabot. They answer the question \emph{``Is this version listed in a vulnerability database?''} That works for known bugs, but a newly published malicious package or a freshly poisoned update is not in any database yet, and that window is exactly when supply chain attacks succeed.
 
-\paragraph{Contributions.} This article makes the following contributions:
-\begin{enumerate}
-  \item A review of open-source supply chain attacks and of existing detection research and tools (Section~\ref{sec:lit}).
-  \item \emph{SupplyShield}, an open-source static analyser for PyPI and npm packages that never installs or executes the code it inspects, requires no third-party dependencies, and explains every finding (Section~\ref{sec:tech}).
-  \item Two features that address gaps in the free tools most developers use: \emph{version-diff analysis}, which reports behaviour newly introduced by an update, and \emph{attack-chain scoring}, which rates dangerous combinations of signals.
-  \item An evaluation on a labelled, inert test corpus comparing SupplyShield with \texttt{pip-audit}, \texttt{npm audit} and Bandit (Section~\ref{sec:eval}). Code, corpus and evaluation scripts are published on GitHub.\footnote{\url{https://github.com/PahuldeepSinghSodhi/supplyshield}}
-\end{enumerate}
+\paragraph{Contributions.} In this work, Pahuldeep Singh Sodhi (i) reviews supply chain attacks and existing detection research and tools; (ii) presents \emph{SupplyShield}, an open-source static analyser for PyPI and npm packages that never executes the code it inspects, needs no third-party dependencies and explains every finding; (iii) introduces version-diff analysis and attack-chain scoring; and (iv) evaluates it against \texttt{pip-audit}, \texttt{npm audit} and Bandit on an inert, labelled test corpus. Code, corpus and evaluation scripts are on GitHub.\footnote{\url{https://github.com/PahuldeepSinghSodhi/supplyshield}}
 
 %=====================================================================
 \section{Literature Review}\label{sec:lit}
 %=====================================================================
 
-\subsection{How supply chain attacks work}
+\paragraph{How supply chain attacks work.} Ohm et al.\ manually analysed 174 malicious packages used in real attacks on npm, PyPI and RubyGems between 2015 and 2019, and organised them into attack trees~\cite{ohm2020backstabber}. Attackers either publish a new package, often with a name resembling a popular one (\emph{typosquatting}), or subvert an existing one by taking over a maintainer account or adding a malicious dependency. Many malicious packages execute during \emph{installation}, through \texttt{setup.py} in Python or \texttt{preinstall}/\texttt{postinstall} scripts in npm, so the victim is compromised before ever using the library. The most common goals were stealing credentials and environment variables, opening backdoors and dropping further malware. Ladisa et al.\ generalised this into a language-independent taxonomy covering the whole supply chain, from code contribution to distribution, validated with 17 experts and 134 developers~\cite{ladisa2023taxonomy}.
 
-Ohm et al.\ manually analysed 174 malicious packages used in real attacks on npm, PyPI and RubyGems between 2015 and 2019, and organised them into attack trees describing how malicious code is injected and how it is triggered~\cite{ohm2020backstabber}. Two findings are central to this work. First, attackers either publish a new package (often with a name resembling a popular one) or subvert an existing one by taking over a maintainer account or adding a malicious dependency. Second, a large share of malicious packages execute during \emph{installation}, through \texttt{setup.py} in Python or \texttt{preinstall}/\texttt{postinstall} scripts in npm, so the victim is compromised before ever using the library. The most common goals were stealing data such as credentials and environment variables, opening backdoors, and dropping further malware.
+\paragraph{Detection research.} Duan et al.\ built MalOSS, a pipeline combining metadata, static and dynamic analysis across PyPI, npm and RubyGems. It led to 339 packages being reported, of which registry maintainers confirmed 278 as malicious~\cite{duan2021measuring}. Sejfia and Sch\"afer presented Amalfi, which combines machine-learning classifiers with reproducibility checks and clone detection; in one week of operation it found 95 previously unknown malicious npm packages~\cite{sejfia2022amalfi}. These systems are effective but need sandboxes, trained models or registry-scale data. They are not tools an individual developer runs before typing \texttt{install}.
 
-Ladisa et al.\ generalised this into a language-independent taxonomy covering the whole supply chain, from code contribution to distribution, validated with 17 experts and 134 developers~\cite{ladisa2023taxonomy}. Zahan et al.\ studied metadata from 1.63 million npm packages and proposed ``weak link'' signals, including the presence of install scripts and maintainer accounts tied to expired email domains, which an attacker could re-register to take over a package~\cite{zahan2022weak}.
-
-\subsection{Typosquatting}
-
-Typosquatting registers names that differ from popular packages by a small edit, such as a missing, extra or swapped letter, so that a typing mistake installs the attacker's code. Vu et al.\ analysed typosquatting and combosquatting in the Python ecosystem~\cite{vu2020typosquatting}, and Taylor et al.\ proposed SpellBound, which warns users when a requested name is suspiciously close to a popular one~\cite{taylor2020spellbound}. Both use edit-distance comparisons against lists of popular packages, the approach SupplyShield also adopts.
-
-\subsection{Detection approaches}
-
-Duan et al.\ built MalOSS, a pipeline combining metadata, static and dynamic analysis across PyPI, npm and RubyGems; it led to 339 packages being reported, 278 of which registry maintainers confirmed as malicious~\cite{duan2021measuring}. Sejfia and Sch\"afer presented Amalfi, which combines machine-learning classifiers with checks for whether a package can be reproduced from its source repository and clone detection; in one week of operation it found 95 previously unknown malicious npm packages~\cite{sejfia2022amalfi}. The OpenSSF Package Analysis project runs packages in a sandbox and records their file, network and process activity~\cite{ossf_pa}. These systems are effective but are research pipelines or infrastructure services that need sandboxes, trained models or registry-scale data, not tools an individual developer runs before typing \texttt{install}.
-
-\subsection{Existing tools}
-
-Table~\ref{tab:tools} compares tools a developer can use today. Advisory-based scanners (\texttt{pip-audit}, \texttt{npm audit}, Dependabot) check name and version against vulnerability databases. Bandit is a general Python static analyser that flags risky constructs such as \texttt{exec} or shell commands, but it has no notion of installation time, typosquatting or package versions, and does not cover JavaScript~\cite{bandit}. GuardDog, from Datadog Security Labs, is the closest open-source tool: it applies Semgrep rules to package source and heuristics to registry metadata, including typosquatting, and can compare a PyPI release with its GitHub repository~\cite{guarddog}. Commercial services such as Socket.dev also analyse package behaviour~\cite{socketdev}.
+\paragraph{Existing tools.} Table~\ref{tab:tools} compares tools a developer can use today. Advisory-based scanners (\texttt{pip-audit}, \texttt{npm audit}, Dependabot) check name and version against vulnerability databases. Bandit is a general Python static analyser that flags risky constructs such as \texttt{exec} or shell commands, but has no notion of installation time, typosquatting or versions, and does not cover JavaScript. GuardDog, from Datadog Security Labs, is the closest open-source tool. It applies Semgrep rules to package source and heuristics to registry metadata, including typosquatting, and can compare a PyPI release with its GitHub repository~\cite{guarddog}. Commercial services such as Socket.dev also analyse package behaviour.
 
 \begin{table}[t]
 \centering
-\caption{Comparison of tools available to developers, based on their documentation. \checkmark{} = supported, -- = not supported, $\sim$ = partially, ? = not verified (closed source).}
+\caption{Tools available to developers, based on their documentation. \checkmark{} = supported, -- = not supported, $\sim$ = partially, ? = not verified (closed source).}
 \label{tab:tools}
 \setlength{\tabcolsep}{3pt}
+\small
 \begin{tabular}{lccccc}
 \toprule
- & pip-audit / & Bandit & GuardDog & Socket & \textbf{Supply-} \\
- & npm audit & & & (comm.) & \textbf{Shield} \\
+ & pip-audit/ & Bandit & GuardDog & Socket & \textbf{Supply-} \\
+ & npm audit & & & (paid) & \textbf{Shield} \\
 \midrule
 Finds new, unlisted malware        & --         & $\sim$     & \checkmark & \checkmark & \checkmark \\
 Finds known vulnerable versions     & \checkmark & --         & --         & \checkmark & -- \\
@@ -88,8 +66,6 @@ Install-time context               & --         & --         & \checkmark & \che
 Typosquatting                      & --         & --         & \checkmark & \checkmark & \checkmark \\
 Diff against previous release       & --         & --         & --$^{a}$   & ?          & \checkmark \\
 Attack-chain scoring               & --         & --         & --         & ?          & \checkmark \\
-Plain-language fix advice          & $\sim$     & $\sim$     & $\sim$     & ?          & \checkmark \\
-Python and npm                     & \checkmark & Python     & \checkmark & \checkmark & \checkmark \\
 No third-party dependencies        & --         & --         & --         & n/a        & \checkmark \\
 Free and open source               & \checkmark & \checkmark & \checkmark & --         & \checkmark \\
 \bottomrule
@@ -97,21 +73,13 @@ Free and open source               & \checkmark & \checkmark & \checkmark & --  
 \end{tabular}
 \end{table}
 
-\subsection{Research gap}
-
-The literature shows that install-time execution, credential theft and poisoned updates dominate real attacks~\cite{ohm2020backstabber,ladisa2023taxonomy}, yet the free tools most developers use are blind to new malicious code, and the strongest detectors require research-scale infrastructure. Among lightweight open-source tools, we did not find one that judges an update by the behaviour it \emph{adds} relative to the previous release, even though event-stream, ua-parser-js and XZ Utils all arrived as updates to trusted packages. Nor did we find one that scores dangerous combinations of signals rather than individual constructs. SupplyShield targets this gap.
+\paragraph{Research gap.} Install-time execution, credential theft and poisoned updates dominate real attacks~\cite{ohm2020backstabber,ladisa2023taxonomy}. Yet the free tools most developers use are blind to new malicious code, and the strongest detectors need research-scale infrastructure. Among lightweight open-source tools, we found none that judges an update by the behaviour it \emph{adds} relative to the previous release, or that scores dangerous combinations of signals rather than individual constructs. SupplyShield targets this gap.
 
 %=====================================================================
 \section{Technology Used and Proposed Solution}\label{sec:tech}
 %=====================================================================
 
-\subsection{Design goals}
-
-SupplyShield was designed to be \emph{safe} (it never installs, imports or executes analysed code), \emph{portable} (Python 3.11+ standard library only, offline, any operating system), \emph{explainable} (every finding states why it is dangerous and what to do), and \emph{fast enough to run before every install}.
-
-\subsection{Architecture}
-
-Figure~\ref{fig:arch} shows the pipeline. The \textbf{loader} accepts a folder or an archive (\texttt{.tar.gz}, \texttt{.tgz}, \texttt{.whl}, \texttt{.zip}). Archives are extracted to a temporary folder with protection against path traversal and symbolic links, so a malicious archive cannot write outside it. The loader detects the ecosystem and reads the package name, version and dependencies.
+SupplyShield was designed to be \emph{safe} (it never installs, imports or executes analysed code), \emph{portable} (Python standard library only, offline, any operating system), \emph{explainable} (every finding states why it is dangerous and what to do), and \emph{fast enough to run before every install}. It is about 700 lines of Python using \texttt{ast}, \texttt{re}, \texttt{tarfile}, \texttt{zipfile} and \texttt{tomllib}, with a command-line interface, JSON output, 20 unit tests and a GitHub Actions workflow.
 
 \begin{figure}[t]
 \centering
@@ -139,82 +107,23 @@ Figure~\ref{fig:arch} shows the pipeline. The \textbf{loader} accepts a folder o
 \label{fig:arch}
 \end{figure}
 
-\subsection{Analysis rules}
+\paragraph{Loader.} As Fig.~\ref{fig:arch} shows, the loader accepts a folder or an archive (\texttt{.tar.gz}, \texttt{.tgz}, \texttt{.whl}, \texttt{.zip}). Archives are extracted to a temporary folder with protection against path traversal and symbolic links, so a malicious archive cannot write outside it. The loader then reads the package name, version and dependencies.
 
-\paragraph{Python.} Python files are parsed into an abstract syntax tree (AST) with the standard \texttt{ast} module, which is more precise than text search: import aliases are resolved, so \texttt{from base64 import b64decode as d} followed by \texttt{exec(d(...))} is still recognised. Code in \texttt{setup.py} is marked as \emph{install-time}, since it runs automatically when a source distribution is installed. Custom install commands (subclasses of \texttt{install}, \texttt{develop}, \texttt{egg\_info} or a \texttt{cmdclass} argument) are reported explicitly.
+\paragraph{Python rules.} Python files are parsed into an abstract syntax tree, which is more precise than text search: import aliases are resolved, so \texttt{from base64 import b64decode as d} followed by \texttt{exec(d(...))} is still recognised as a hidden payload. Code in \texttt{setup.py} is marked as \emph{install-time}, and custom install commands are reported. Further rules flag dynamic \texttt{exec}/\texttt{eval}, system commands (critical when they download and run a script, e.g.\ \texttt{curl ... | sh}), network calls, bulk copies of all environment variables, and references to credential stores such as \texttt{\textasciitilde/.ssh} or \texttt{.aws/credentials}.
 
-\paragraph{npm.} The \texttt{preinstall}, \texttt{install} and \texttt{postinstall} scripts in \texttt{package.json} are classified as benign native builds (e.g.\ \texttt{node-gyp rebuild}, low severity), downloading or shell commands (critical), or other scripts (medium). JavaScript files referenced by an install script are marked as install-time, and all JavaScript is checked with patterns for \texttt{child\_process}, \texttt{eval}/\texttt{new Function}, base64 decoding, network modules, bulk copies of \texttt{process.env} and obfuscator-style identifiers.
+\paragraph{npm rules.} Install scripts in \texttt{package.json} are graded as benign native builds (e.g.\ \texttt{node-gyp rebuild}, low), download-and-run commands (critical) or other scripts (medium). JavaScript files started by an install script are marked install-time, and all JavaScript is checked for \texttt{child\_process}, \texttt{eval}, base64 decoding followed by execution, network modules, copies of \texttt{process.env}, credential paths and obfuscator-style identifiers.
 
-\paragraph{Shared checks.} Long strings with high Shannon entropy are flagged as possible hidden payloads. String literals naming credential stores (\texttt{\textasciitilde/.ssh}, \texttt{.aws/credentials}, \texttt{.npmrc}, browser password databases) are flagged as secret access. Package names are compared with lists of popular packages using the Damerau--Levenshtein distance, which counts swapped neighbouring letters as one edit, so \texttt{lodahs} is matched to \texttt{lodash}. Table~\ref{tab:rules} summarises the rules.
+\paragraph{Shared checks.} Long high-entropy strings are flagged as possible hidden payloads. Package names are compared with lists of popular packages using the Damerau--Levenshtein distance, which counts a swap of neighbouring letters as one edit, so \texttt{lodahs} is matched to \texttt{lodash}.
 
-\begin{table}[t]
-\centering
-\caption{Main detection rules and severities.}
-\label{tab:rules}
-\scriptsize
-\begin{tabular}{p{2.9cm}p{1.2cm}p{6.6cm}}
-\toprule
-Rule & Severity & Detects \\
-\midrule
-PY-DECODE-EXEC / NPM-DECODE-EXEC & critical & Encoded data decoded and executed (hidden payload) \\
-PY-DOWNLOAD-EXEC, NPM install script with \texttt{curl|sh} & critical & Downloading and running a remote script \\
-PY-INSTALL-HOOK, PY-SETUP-CODE & high & Custom code or risky calls executed during installation \\
-PY/NPM-ENV-DUMP & high & Copying all environment variables (API keys, tokens) \\
-PY/NPM-SECRET-PATH & high & References to SSH keys, cloud or npm credentials, browser stores \\
-PY/NPM-DYNAMIC-EXEC & high & \texttt{exec}/\texttt{eval} of run-time strings \\
-TYPOSQUAT & high & Name within one edit (two for long names) of a popular package \\
-PY/NPM-PROCESS, -NETWORK & medium & System commands; network connections \\
-OBF-BLOB, NPM-OBF-IDENTIFIERS & medium & High-entropy blobs; obfuscator output \\
-NPM-INSTALL-SCRIPT & low--critical & Any lifecycle script, graded by content \\
-NEW-DEPENDENCY (diff) & low & Dependency added by an update \\
-\bottomrule
-\end{tabular}
-\end{table}
+\paragraph{Attack-chain scoring.} Single signals are common in legitimate code: an HTTP client opens connections and a build tool runs commands. SupplyShield therefore gives points by severity (low 3, medium 10, high 25, critical 40; each rule counts at most twice) and adds a bonus when findings form a known attack chain: install-time execution + secret access + network (\emph{install-time data theft}, +40); secret access + network (\emph{credential exfiltration}, +25); system commands at install time (+20); obfuscation + execution (\emph{hidden payload}, +20). Scores are capped at 100: 60 or more is \textsc{malicious}, 25--59 \textsc{suspicious}, otherwise \textsc{safe}. The exit code (0, 1 or 2) lets it block a build pipeline.
 
-\subsection{Attack-chain scoring}
-
-Individual signals are common in legitimate code: an HTTP client opens network connections and a build tool runs commands. Treating each signal alone would either miss attacks or flood users with false alarms. SupplyShield therefore assigns points by severity (low 3, medium 10, high 25, critical 40; repeated hits of one rule count at most twice) and adds a bonus when findings form a known attack chain:
-\begin{itemize}
-  \item install-time execution + secret access + network: \emph{install-time data theft} (+40);
-  \item secret access + network: \emph{credential exfiltration} (+25);
-  \item system commands run at install time: \emph{install-time command execution} (+20);
-  \item obfuscation + execution: \emph{hidden payload} (+20).
-\end{itemize}
-The score is capped at 100. Packages scoring 60 or more are \textsc{malicious}, 25--59 \textsc{suspicious}, otherwise \textsc{safe}. The exit code (0, 1 or 2) lets SupplyShield block a build pipeline.
-
-\subsection{Version-diff analysis}
-
-The command \texttt{supplyshield diff old new} analyses both releases and reports only findings whose rule and file did not appear in the old release, together with newly added dependencies. These \emph{introduced} findings are scored on their own. This mirrors how poisoned updates work: a trusted package gains, for example, an install hook and a new dependency in a minor release. Judging the new release in isolation would mix this change with behaviour users had already accepted; the diff isolates exactly what the update adds.
-
-\subsection{Implementation}
-
-SupplyShield is about 700 lines of Python using only the standard library (\texttt{ast}, \texttt{re}, \texttt{tarfile}, \texttt{zipfile}, \texttt{tomllib}, \texttt{json}). It has a command-line interface with human-readable and JSON output, 20 unit tests, and a GitHub Actions workflow running the tests on Python 3.11--3.13. Listing~\ref{lst:out} shows part of the output for a poisoned update.
-
-\begin{lstlisting}[caption={Excerpt of \texttt{supplyshield diff} on a poisoned update.},label={lst:out}]
-Old version 1.0.0: SAFE (0/100)
-New version 1.1.0: MALICIOUS (100/100)
-Behaviour introduced by update: colorlib 1.0.0 -> 1.1.0 (pypi)
-Attack chains detected:
-  >> Install-time command execution: runs system commands during installation
-CRITICAL PY-DOWNLOAD-EXEC  setup.py:9  [runs at install, NEW in this version]
-   code: os.system('curl -s https://collector.example.invalid/stage2.sh | sh')
-   why:  A system command downloads something from the internet and runs it ...
-   fix:  Do not install. Nothing in a library should download and run remote scripts.
-\end{lstlisting}
+\paragraph{Version-diff analysis.} \texttt{supplyshield diff old new} analyses both releases and reports only findings absent from the old one, plus newly added dependencies, scored on their own. This mirrors how poisoned updates work: a trusted package gains an install hook or a new dependency in a minor release. Judging the new release alone mixes that change with behaviour users already accepted; the diff isolates exactly what the update adds.
 
 %=====================================================================
 \section{Evaluation}\label{sec:eval}
 %=====================================================================
 
-\subsection{Test corpus and method}
-
-Distributing or running real malware would be unsafe and inappropriate for this study, so we built a labelled corpus of 20 \emph{inert} packages (10 PyPI, 10 npm) that imitate attack patterns documented in the literature~\cite{ohm2020backstabber}. All network addresses use the reserved \texttt{.invalid} domain~\cite{rfc2606}, and hidden payloads only print a message. Each ecosystem has four benign packages: a plain library, a legitimate network client, one harder case (a \texttt{setup.py} that calls \texttt{git} to compute its version; a native add-on with a \texttt{node-gyp} install script), and the clean first release of an update pair. There are six malicious packages per ecosystem: install-time credential theft, a base64-hidden payload, environment-variable harvesting, a typosquat, a poisoned update, and one sample \emph{deliberately written to evade} SupplyShield by assembling module and function names at run time.
-
-Each tool was run on every package it supports: SupplyShield 0.1.0, Bandit 1.9.4 (a package counts as detected if Bandit reports a medium- or high-severity issue), \texttt{pip-audit} 2.10.1, and \texttt{npm audit} from npm 11.17 (run with \texttt{--package-lock-only --ignore-scripts}, so no sample code executed). GuardDog could not be evaluated: its installation on the test machine (Windows 11, Python 3.14) failed because several native dependencies could not be compiled. It is therefore compared only qualitatively in Table~\ref{tab:tools}.
-
-\subsection{Results}
-
-Table~\ref{tab:results} summarises detection. SupplyShield detected 10 of the 12 malicious packages across both ecosystems (recall 0.83) with one false alarm (precision 0.91), taking a few milliseconds per package. \texttt{pip-audit} and \texttt{npm audit} detected none of the malicious packages. For the Python samples \texttt{pip-audit} reported ``No known vulnerabilities found'' or could not audit them at all, because projects with only a \texttt{setup.py} are unsupported. \texttt{npm audit} reported zero vulnerabilities for a package whose install script steals the user's npm token. This is not a defect in either tool. They are designed to find known vulnerable versions, and these packages are new.
+\paragraph{Corpus and method.} Running or distributing real malware would be unsafe, so we built a labelled corpus of 20 \emph{inert} packages (10 PyPI, 10 npm) that imitate attack patterns from the literature~\cite{ohm2020backstabber}. Network addresses use the reserved \texttt{.invalid} domain and hidden payloads only print a message. Each ecosystem has four benign packages: a plain library, a legitimate network client, a harder case (a \texttt{setup.py} that calls \texttt{git}; a native add-on with a \texttt{node-gyp} install script), and the clean first release of an update pair. Each also has six malicious ones: install-time credential theft, a base64-hidden payload, environment-variable harvesting, a typosquat, a poisoned update, and one sample \emph{deliberately written to evade} SupplyShield. We ran SupplyShield 0.1.0, Bandit 1.9.4 (detected = a medium- or high-severity issue), \texttt{pip-audit} 2.10.1 and \texttt{npm audit} (npm 11.17, with \texttt{--ignore-scripts}, so no sample code ran). GuardDog could not be installed on the test machine (Windows 11, Python 3.14) because native dependencies failed to compile, so it is compared only in Table~\ref{tab:tools}.
 
 \begin{table}[t]
 \centering
@@ -232,27 +141,21 @@ npm audit & 10 & 0 & 6 & 0 & -- & 0.00 \\
 \end{tabular}
 \end{table}
 
-Bandit, a fairer code-level baseline, detected the three Python packages containing \texttt{exec}, \texttt{eval} or network calls with medium or high severity. It missed the typosquat, which has no suspicious code, and the poisoned update: it rated \texttt{os.system("curl ... | sh")} inside a custom install command as \emph{low} severity, because it has no notion of install-time execution or download-and-run commands. Counting low-severity issues too would raise Bandit's recall to 4 of 6 but would also flag the benign \texttt{gitversion} package, the same false alarm SupplyShield raised.
+\paragraph{Results.} Table~\ref{tab:results} summarises detection. SupplyShield detected 10 of 12 malicious packages (recall 0.83) with one false alarm (precision 0.91), in a few milliseconds per package. \texttt{pip-audit} and \texttt{npm audit} detected none. \texttt{pip-audit} reported ``No known vulnerabilities found'' or could not audit \texttt{setup.py}-only projects at all, and \texttt{npm audit} reported zero vulnerabilities for a package whose install script steals the user's npm token. This is not a defect: these tools are designed to find known vulnerable versions, and these packages are new. Bandit detected the three Python packages containing \texttt{exec}, \texttt{eval} or network calls. It missed the typosquat, which has no suspicious code, and the poisoned update, rating \texttt{os.system("curl ... | sh")} inside a custom install command as only \emph{low} severity.
 
-\paragraph{Version diff.} For both update pairs, the first release was rated \textsc{safe}. The diff isolated the introduced behaviour: for \texttt{colorlib} 1.0$\rightarrow$1.1 an install hook and a download-and-run command (\textsc{malicious}, 100/100); for \texttt{minilog-pretty} 1.0.0$\rightarrow$1.0.1 a new \texttt{curl | sh} install script and a newly added dependency, \texttt{flatmap-streamz} (\textsc{suspicious}, 43/100). None of the other evaluated tools produces this kind of report.
+\paragraph{Version diff.} For both update pairs the first release was rated \textsc{safe}. The diff isolated what each update added: for \texttt{colorlib} 1.0$\rightarrow$1.1, an install hook and a download-and-run command (\textsc{malicious}, 100/100); for \texttt{minilog-pretty} 1.0.0$\rightarrow$1.0.1, a \texttt{curl | sh} install script and a new dependency, \texttt{flatmap-streamz} (\textsc{suspicious}, 43/100). None of the other evaluated tools produces this kind of report.
 
-\paragraph{Errors.} SupplyShield missed both deliberately evasive samples, which build \texttt{os.system} and \texttt{require('child\_process')} from string pieces at run time. This is an inherent limit of static pattern and AST analysis. The false alarm was the benign \texttt{setup.py} that calls \texttt{git}: it is install-time command execution, scored \textsc{suspicious} (55/100). The verdict was not \textsc{malicious}, and the explanation tells the user exactly which command runs, so the alarm is cheap to dismiss.
+\paragraph{Errors.} SupplyShield missed both evasive samples, which build \texttt{os.system} and \texttt{require('child\_process')} from string pieces at run time, an inherent limit of static analysis. The false alarm was the benign \texttt{setup.py} that calls \texttt{git}, scored \textsc{suspicious} (55/100) with an explanation naming the exact command, so it is cheap to dismiss.
 
-\subsection{Discussion}
-
-The results support the paper's central claim in a narrow, defensible form. On packages that are new and therefore not yet in any advisory database, the most widely used free scanners provide no protection, while behaviour-based analysis catches most attack patterns. Compared with a generic static analyser, the gains come from \emph{context}: knowing that code runs at install time, that a name imitates a popular package, and that a release added behaviour its predecessor did not have. The tools are complementary. SupplyShield does not detect known vulnerable versions, which \texttt{pip-audit} and \texttt{npm audit} do well, so a practical workflow runs both.
+\paragraph{Discussion.} On packages too new to be in any advisory database, the most widely used free scanners give no protection, while behaviour-based analysis catches most attack patterns. Compared with a generic analyser, the gain comes from \emph{context}: knowing that code runs at install time, that a name imitates a popular package, and that a release added behaviour its predecessor lacked. The tools are complementary. SupplyShield does not detect known vulnerable versions, which \texttt{pip-audit} and \texttt{npm audit} do well, so a practical workflow runs both.
 
 %=====================================================================
-\section{Limitations and Future Work}
+\section{Limitations and Conclusion}
 %=====================================================================
 
-The corpus is small and self-constructed, so the measured precision and recall demonstrate feasibility, not real-world accuracy; evaluation on real malicious package datasets such as Backstabber's Knife Collection~\cite{ohm2020backstabber} is the most important next step. Static analysis cannot see code assembled at run time or downloaded later, so it should be combined with sandboxed dynamic analysis such as OpenSSF Package Analysis~\cite{ossf_pa}. The JavaScript rules are pattern-based; an AST parser would improve precision. The typosquatting lists are short and manually curated, and could be generated from registry download statistics. Finally, GuardDog should be evaluated on the same corpus on a supported platform.
+The corpus is small and self-built, so the measured precision and recall show feasibility, not real-world accuracy. Evaluation on real malicious-package datasets~\cite{ohm2020backstabber} and against GuardDog on a supported platform are the next steps. Static analysis cannot see code assembled at run time or downloaded later, so it should be paired with sandboxed dynamic analysis, and the JavaScript rules would gain precision from a full parser.
 
-%=====================================================================
-\section{Conclusion}
-%=====================================================================
-
-Software supply chain attacks turn the trust developers place in open-source packages into a delivery mechanism for malware, and the free tools most people use only recognise problems that are already known. SupplyShield shows that a small, dependency-free static analyser can examine what a package actually does before installation, explain its findings in plain language, and highlight what a new release adds. On our corpus it detected 10 of 12 malicious packages that \texttt{pip-audit} and \texttt{npm audit} reported as clean. It complements rather than replaces vulnerability scanners and dynamic analysis.
+Software supply chain attacks turn developers' trust in open-source packages into a delivery route for malware, while the free tools most people use only recognise problems that are already known. SupplyShield shows that a small, dependency-free analyser can examine what a package actually does before installation, explain its findings in plain language, and highlight what a new release adds. On our corpus it detected 10 of 12 malicious packages that \texttt{pip-audit} and \texttt{npm audit} reported as clean. It complements, rather than replaces, vulnerability scanners and dynamic analysis.
 
 \bibliographystyle{splncs04}
 \bibliography{references}
