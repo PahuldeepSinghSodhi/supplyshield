@@ -124,7 +124,7 @@ Reproduce everything: `python eval/run_eval.py`; per-sample output: [eval/result
 
 | Folder | Contents | Show this when explaining… |
 |---|---|---|
-| [`supplyshield/`](supplyshield/) | The scanner (~700 lines, standard library only) | **the code** |
+| [`supplyshield/`](supplyshield/) | The scanner (~870 lines, standard library only) | **the code** |
 | ↳ [`rules_python.py`](supplyshield/rules_python.py) | Python syntax-tree rules | how detection works |
 | ↳ [`rules_npm.py`](supplyshield/rules_npm.py) | npm install-script and JavaScript rules | npm support |
 | ↳ [`scoring.py`](supplyshield/scoring.py) | Attack-chain scoring and verdicts | **novelty #1** |
