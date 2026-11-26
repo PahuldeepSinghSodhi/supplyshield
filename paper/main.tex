@@ -6,6 +6,8 @@
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning}
 \usepackage{xcolor}
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily\scriptsize,breaklines=true,frame=single,columns=fullflexible}
 \usepackage[hidelinks]{hyperref}  % hidelinks: no coloured boxes around links and citations
 \usepackage{url}
 
@@ -78,7 +80,9 @@ No third-party dependencies        & --         & --         & --         & n/a 
 \section{Technology Used and Proposed Solution}\label{sec:tech}
 %=====================================================================
 
-SupplyShield is about 700 lines of Python using only the standard library (\texttt{ast}, \texttt{re}, \texttt{tarfile}, \texttt{zipfile}, \texttt{tomllib}). It never installs, imports or runs analysed code, works offline, and comes with a command-line interface, JSON output, 20 unit tests and continuous integration. Fig.~\ref{fig:arch} shows its pipeline.
+\paragraph{Threat model.} We assume an attacker who can publish a package to PyPI or npm, either under a new (possibly look-alike) name or as a new release of an existing package after taking over a maintainer account. The attacker's goal is to run code on the developer's or build server's machine, usually at install time, to steal secrets or download further malware. The defender is a developer or a build pipeline that can inspect a package archive before installing it, but does not have a sandbox, a trained model or registry-wide data. SupplyShield is designed for this defender.
+
+\paragraph{Implementation.} SupplyShield is about 700 lines of Python using only the standard library (\texttt{ast}, \texttt{re}, \texttt{tarfile}, \texttt{zipfile}, \texttt{tomllib}). It never installs, imports or runs analysed code, works offline, and comes with a command-line interface, JSON output, 20 unit tests and continuous integration. Fig.~\ref{fig:arch} shows its pipeline.
 
 \begin{figure}[t]
 \centering
@@ -112,11 +116,50 @@ SupplyShield is about 700 lines of Python using only the standard library (\text
 
 \paragraph{npm rules.} Install scripts are graded as benign native builds (\texttt{node-gyp rebuild}, low), download-and-run commands (critical) or other (medium). Files started by them are marked install-time, and all JavaScript is checked for \texttt{child\_process}, \texttt{eval}, base64 decode-and-execute, network modules, copies of \texttt{process.env}, credential paths and obfuscated identifiers.
 
-\paragraph{Shared checks.} High-entropy strings are flagged as possible hidden payloads. Names are compared with popular packages by Damerau--Levenshtein distance, which counts a swap of neighbouring letters as one edit, so \texttt{lodahs} matches \texttt{lodash}.
+\paragraph{Shared checks.} High-entropy strings are flagged as possible hidden payloads. Names are compared with popular packages by Damerau--Levenshtein distance, which counts a swap of neighbouring letters as one edit, so \texttt{lodahs} matches \texttt{lodash}. Table~\ref{tab:rules} summarises the main rules.
+
+\begin{table}[t]
+\centering
+\caption{Main detection rules and their severities.}
+\label{tab:rules}
+\scriptsize
+\begin{tabular}{p{3.3cm}p{1.3cm}p{6.4cm}}
+\toprule
+Rule & Severity & Detects \\
+\midrule
+PY/NPM-DECODE-EXEC & critical & Encoded data decoded and then executed (hidden payload) \\
+PY-DOWNLOAD-EXEC; npm install script with \texttt{curl | sh} & critical & Downloading and immediately running a remote script \\
+PY-INSTALL-HOOK, PY-SETUP-CODE & high & Custom code or risky calls run during installation \\
+PY/NPM-ENV-DUMP & high & Copying all environment variables (API keys, tokens) \\
+PY/NPM-SECRET-PATH & high & SSH keys, cloud or npm credentials, browser password stores \\
+PY/NPM-DYNAMIC-EXEC & high & \texttt{exec}/\texttt{eval} of strings built at run time \\
+TYPOSQUAT & high & Name one edit (two for long names) from a popular package \\
+PY/NPM-PROCESS, -NETWORK & medium & System commands; network connections \\
+OBF-BLOB, NPM-OBF-IDENTIFIERS & medium & High-entropy blobs; obfuscator output \\
+NPM-INSTALL-SCRIPT & low--critical & Any install script, graded by what it runs \\
+NEW-DEPENDENCY (diff only) & low & Dependency added by an update \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \paragraph{Attack-chain scoring.} Single signals are common in legitimate code, so findings score by severity (low 3, medium 10, high 25, critical 40) and earn a bonus when they form a known chain: install-time + secret access + network (\emph{data theft}, +40); secret access + network (+25); commands at install time (+20); obfuscation + execution (+20). Scores of 60--100 are \textsc{malicious}, 25--59 \textsc{suspicious}, otherwise \textsc{safe}; the exit code can block a build pipeline.
 
-\paragraph{Version diff.} \texttt{supplyshield diff old new} reports only findings absent from the old release, plus new dependencies, scored on their own. This isolates exactly what a poisoned update adds, instead of mixing it with behaviour users already accepted.
+\paragraph{Version diff.} \texttt{supplyshield diff old new} reports only findings absent from the old release, plus new dependencies, scored on their own. This isolates exactly what a poisoned update adds, instead of mixing it with behaviour users already accepted. Listing~\ref{lst:out} shows the report for a poisoned update from the test corpus: every finding names the file and line, is tagged as running at install time and new in this version, and carries a plain-language explanation and fix.
+
+\begin{lstlisting}[caption={Excerpt of \texttt{supplyshield diff} output for a poisoned update.},label={lst:out}]
+Old version 1.0.0: SAFE (0/100)
+New version 1.1.0: MALICIOUS (100/100)
+Behaviour introduced by update: colorlib 1.0.0 -> 1.1.0 (pypi)
+Attack chains detected:
+  >> Install-time command execution: runs system commands during installation
+CRITICAL PY-DOWNLOAD-EXEC  setup.py:9  [runs at install, NEW in this version]
+   code: os.system('curl -s https://collector.example.invalid/stage2.sh | sh')
+   why:  A system command downloads something from the internet and runs it
+         immediately (e.g. 'curl ... | sh'). This is how second-stage malware is fetched.
+   fix:  Do not install. Nothing in a library should download and run remote scripts.
+HIGH     PY-INSTALL-HOOK   setup.py:6  [runs at install, NEW in this version]
+   code: class Telemetry(setuptools.command.install.install)
+\end{lstlisting}
 
 %=====================================================================
 \section{Evaluation}\label{sec:eval}
