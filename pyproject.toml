@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "supplyshield"
+version = "0.1.0"
+description = "Detect malicious behaviour in PyPI and npm packages before installation"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+dependencies = []
+
+[project.scripts]
+supplyshield = "supplyshield.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["supplyshield*"]
+
+[tool.setuptools.package-data]
+"supplyshield.data" = ["*.txt"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

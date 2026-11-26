@@ -1,0 +1,21 @@
+sample,ecosystem,malicious,SupplyShield,SupplyShield detail,SupplyShield ms,Bandit,Bandit detail,Bandit ms,pip-audit,pip-audit detail,pip-audit ms,npm audit,npm audit detail,npm audit ms
+pypi/clean-tidytext,pypi,False,False,SAFE (0/100),16,False,0 issues (0 medium/high),300,False,no known vulnerabilities,715,,n/a (npm only),0
+pypi/clean-weatherlite,pypi,False,False,SAFE (10/100),4,False,0 issues (0 medium/high),208,False,no known vulnerabilities,557,,n/a (npm only),0
+pypi/clean-gitversion,pypi,False,True,SUSPICIOUS (55/100),6,False,3 issues (0 medium/high),207,False,could not audit (setup.py project),546,,n/a (npm only),0
+pypi/colorlib-1.0,pypi,False,False,SAFE (0/100),3,False,0 issues (0 medium/high),204,False,no known vulnerabilities,547,,n/a (npm only),0
+pypi/mal-setup-exfil,pypi,True,True,MALICIOUS (100/100),24,True,1 issues (1 medium/high),203,False,could not audit (setup.py project),542,,n/a (npm only),0
+pypi/mal-obfuscated,pypi,True,True,MALICIOUS (60/100),5,True,1 issues (1 medium/high),213,False,no known vulnerabilities,550,,n/a (npm only),0
+pypi/mal-env-harvest,pypi,True,True,MALICIOUS (60/100),5,True,1 issues (1 medium/high),207,False,no known vulnerabilities,541,,n/a (npm only),0
+pypi/mal-typosquat-reqeusts,pypi,True,True,SUSPICIOUS (25/100),2,False,0 issues (0 medium/high),205,False,no known vulnerabilities,552,,n/a (npm only),0
+pypi/colorlib-1.1,pypi,True,True,MALICIOUS (100/100),3,False,2 issues (0 medium/high),206,False,could not audit (setup.py project),549,,n/a (npm only),0
+pypi/mal-evasive,pypi,True,False,SAFE (0/100),3,False,0 issues (0 medium/high),213,False,no known vulnerabilities,544,,n/a (npm only),0
+npm/clean-strtools,npm,False,False,SAFE (0/100),3,,n/a (Python only),0,,n/a (Python only),0,False,0 vulnerabilities,1347
+npm/clean-httpget,npm,False,False,SAFE (10/100),3,,n/a (Python only),0,,n/a (Python only),0,False,0 vulnerabilities,911
+npm/clean-native-addon,npm,False,False,SAFE (3/100),3,,n/a (Python only),0,,n/a (Python only),0,False,0 vulnerabilities,909
+npm/minilog-1.0.0,npm,False,False,SAFE (0/100),7,,n/a (Python only),0,,n/a (Python only),0,False,0 vulnerabilities,925
+npm/mal-postinstall-exfil,npm,True,True,MALICIOUS (100/100),4,,n/a (Python only),0,,n/a (Python only),0,False,0 vulnerabilities,902
+npm/mal-obfuscated,npm,True,True,MALICIOUS (85/100),5,,n/a (Python only),0,,n/a (Python only),0,False,0 vulnerabilities,907
+npm/mal-env-harvest,npm,True,True,MALICIOUS (60/100),4,,n/a (Python only),0,,n/a (Python only),0,False,0 vulnerabilities,902
+npm/mal-typosquat-lodahs,npm,True,True,SUSPICIOUS (25/100),1,,n/a (Python only),0,,n/a (Python only),0,False,0 vulnerabilities,904
+npm/minilog-1.0.1,npm,True,True,SUSPICIOUS (40/100),3,,n/a (Python only),0,,n/a (Python only),0,False,0 vulnerabilities,905
+npm/mal-evasive,npm,True,False,SAFE (0/100),3,,n/a (Python only),0,,n/a (Python only),0,False,0 vulnerabilities,902

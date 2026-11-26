@@ -1,0 +1,102 @@
+{
+  "pypi/clean-tidytext": {
+    "ecosystem": "pypi",
+    "malicious": false,
+    "note": "Plain text utility library"
+  },
+  "pypi/clean-weatherlite": {
+    "ecosystem": "pypi",
+    "malicious": false,
+    "note": "Legitimate API client: network use is its job"
+  },
+  "pypi/clean-gitversion": {
+    "ecosystem": "pypi",
+    "malicious": false,
+    "note": "Common legitimate pattern: setup.py calls git for the version (expected false-positive risk)"
+  },
+  "pypi/colorlib-1.0": {
+    "ecosystem": "pypi",
+    "malicious": false,
+    "note": "Clean first release of the update-pair package"
+  },
+  "pypi/mal-setup-exfil": {
+    "ecosystem": "pypi",
+    "malicious": true,
+    "note": "Install hook steals SSH private key (Backstabber-style install-time attack)"
+  },
+  "pypi/mal-obfuscated": {
+    "ecosystem": "pypi",
+    "malicious": true,
+    "note": "Base64-hidden payload executed on import"
+  },
+  "pypi/mal-env-harvest": {
+    "ecosystem": "pypi",
+    "malicious": true,
+    "note": "Steals all environment variables (API keys, tokens) on import"
+  },
+  "pypi/mal-typosquat-reqeusts": {
+    "ecosystem": "pypi",
+    "malicious": true,
+    "note": "Typosquat of 'requests' with no visible payload"
+  },
+  "pypi/colorlib-1.1": {
+    "ecosystem": "pypi",
+    "malicious": true,
+    "note": "Poisoned update: 1.1 adds an install hook that downloads and runs a script"
+  },
+  "pypi/mal-evasive": {
+    "ecosystem": "pypi",
+    "malicious": true,
+    "note": "Deliberately evasive: builds 'os.system' from pieces (expected miss)"
+  },
+  "npm/clean-strtools": {
+    "ecosystem": "npm",
+    "malicious": false,
+    "note": "Plain string utility library"
+  },
+  "npm/clean-httpget": {
+    "ecosystem": "npm",
+    "malicious": false,
+    "note": "Legitimate HTTP helper: network use is its job"
+  },
+  "npm/clean-native-addon": {
+    "ecosystem": "npm",
+    "malicious": false,
+    "note": "Native add-on with benign install script (common false-positive trigger)"
+  },
+  "npm/minilog-1.0.0": {
+    "ecosystem": "npm",
+    "malicious": false,
+    "note": "Clean first release of the update-pair package"
+  },
+  "npm/mal-postinstall-exfil": {
+    "ecosystem": "npm",
+    "malicious": true,
+    "note": "postinstall steals npm token and environment (most common npm malware pattern)"
+  },
+  "npm/mal-obfuscated": {
+    "ecosystem": "npm",
+    "malicious": true,
+    "note": "Base64-hidden payload executed with eval"
+  },
+  "npm/mal-env-harvest": {
+    "ecosystem": "npm",
+    "malicious": true,
+    "note": "Steals all environment variables on require()"
+  },
+  "npm/mal-typosquat-lodahs": {
+    "ecosystem": "npm",
+    "malicious": true,
+    "note": "Typosquat of 'lodash' with no visible payload"
+  },
+  "npm/minilog-1.0.1": {
+    "ecosystem": "npm",
+    "malicious": true,
+    "note": "Poisoned update: adds install-time download-and-run plus a new dependency (event-stream style)"
+  },
+  "npm/mal-evasive": {
+    "ecosystem": "npm",
+    "malicious": true,
+    "note": "Deliberately evasive: builds require('child_process') from pieces (expected miss)"
+  }
+}
