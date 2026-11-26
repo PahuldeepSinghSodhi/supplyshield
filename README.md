@@ -13,7 +13,7 @@
 **Pahuldeep Singh Sodhi** · Roll No. 102306051 · Thapar Institute of Engineering and Technology (TIET)<br>
 Cybersecurity course project · Instructor: **Dr. Rohit Ahuja**
 
-[📄 Article (LaTeX source)](paper/) · [🧠 How it works](docs/HOW_IT_WORKS.md) · [📊 Full results](eval/results.md) · [🎤 Talk notes](presentation/talk-notes.md)
+[📄 **Read the article (PDF)**](paper/SupplyShield.pdf) · [🧾 Overleaf source](paper/) · [🧠 How it works](docs/HOW_IT_WORKS.md) · [📊 Full results](eval/results.md) · [🎤 Talk notes](presentation/talk-notes.md)
 
 </div>
 
@@ -130,7 +130,7 @@ Reproduce everything: `python eval/run_eval.py`; per-sample output: [eval/result
 | [`samples/`](samples/) | 20 inert test packages + labels + generator | the test data |
 | [`eval/`](eval/) | Comparison script and results | **the results** |
 | [`tests/`](tests/) | 20 unit tests (run automatically on GitHub) | code quality |
-| [`paper/`](paper/) | Springer LNCS article (Overleaf source) | **the article** |
+| [`paper/`](paper/) | Article [PDF](paper/SupplyShield.pdf), Overleaf source and ready-to-upload zip | **the article** |
 | [`presentation/`](presentation/) | Talk script, likely questions, demo script | the presentation |
 | [`docs/`](docs/) | Plain-language explanation of the method | answering questions |
 
