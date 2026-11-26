@@ -124,15 +124,16 @@ Reproduce everything: `python eval/run_eval.py`; per-sample output: [eval/result
 
 | Folder | Contents | Show this when explaining… |
 |---|---|---|
-| [`supplyshield/`](supplyshield/) | The scanner (~870 lines, standard library only) | **the code** |
+| [`supplyshield/`](supplyshield/) | The scanner (~1,000 lines, standard library only) | **the code** |
 | ↳ [`rules_python.py`](supplyshield/rules_python.py) | Python syntax-tree rules | how detection works |
 | ↳ [`rules_npm.py`](supplyshield/rules_npm.py) | npm install-script and JavaScript rules | npm support |
 | ↳ [`scoring.py`](supplyshield/scoring.py) | Attack-chain scoring and verdicts | **novelty #1** |
 | ↳ [`analyzer.py`](supplyshield/analyzer.py) | Scan and version-diff logic | **novelty #2** |
 | ↳ [`advisories.py`](supplyshield/advisories.py) | Known-vulnerability / known-malware lookup (`--vulns`) | the pip-audit / npm audit part |
+| ↳ [`guard.py`](supplyshield/guard.py) | Pre-install guard for AI agents, shells and CI | integration |
 | [`samples/`](samples/) | 20 inert test packages + labels + generator | the test data |
 | [`eval/`](eval/) | Comparison script and results | **the results** |
-| [`tests/`](tests/) | 27 unit tests (run automatically on GitHub; vulnerability tests use a fake database, so no internet) | code quality |
+| [`tests/`](tests/) | 39 unit tests (run automatically on GitHub; vulnerability tests use a fake database, so no internet) | code quality |
 | [`paper/`](paper/) | Article [PDF](paper/SupplyShield.pdf), Overleaf source and ready-to-upload zip | **the article** |
 | [`presentation/`](presentation/) | Talk script, likely questions, demo script | the presentation |
 | [`docs/`](docs/) | Plain-language explanation of the method | answering questions |
@@ -160,6 +161,38 @@ Duplicate records of the same bug are merged. Known vulnerabilities are shown in
 CI gate, but they do not raise the *malice* score: a bug in an honest package is not malware. This is the only
 network feature; only the package name, ecosystem and version are sent, and without the flag SupplyShield stays
 fully offline.
+
+### 🤖 Automatic guard for AI coding agents, shells and CI
+
+`python -m supplyshield.guard` sits **in front of install commands**. It recognises `pip`, `uv pip`, `npm`, `yarn`
+and `pnpm` installs, fetches each package without installing it, scans it (with `--vulns`), and **blocks the
+command (exit 2) unless every package is SAFE**.
+
+**AI coding agent (Claude Code):** add to `.claude/settings.json` so every install the agent runs is checked first:
+
+```json
+{"hooks": {"PreToolUse": [{"matcher": "Bash", "hooks": [
+  {"type": "command", "command": "python -m supplyshield.guard"}]}]}}
+```
+
+The agent receives the block reason and can choose another package. This also protects against packages an AI
+*invents* that attackers have registered.
+
+**Shell or CI:**
+
+```bash
+python -m supplyshield.guard -- pip install requests==2.31.0 && pip install requests==2.31.0
+```
+
+```
+SupplyShield blocked this install. Choose another package or version, or ask the user.
+BLOCKED fastjsonify 0.1.0: MALICIOUS 100/100
+        - PY-INSTALL-HOOK: setup.py replaces a standard installation step with custom code, so that code runs ...
+        - PY-SECRET-PATH: The code refers to a credential location (.ssh, id_rsa) such as SSH keys, ...
+```
+
+The guard fails closed: if a package can't be fetched as a wheel for scanning, the install is blocked with an
+explanation. Set `SUPPLYSHIELD_GUARD_VULNS=0` to skip the online vulnerability lookup.
 
 ### Checking a registry package before installing it
 
