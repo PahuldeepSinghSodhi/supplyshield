@@ -28,6 +28,12 @@ CHAINS = [
 
 
 def score(findings: list[Finding]) -> tuple[int, list[str]]:
+    # A known vulnerability is a bug in an honest package, not evidence of malice, so it is
+    # reported separately (see report.py / cli.py) and does not add to the malice score.
+    # A known-malware advisory is conclusive on its own.
+    if any(f.category == "malware" for f in findings):
+        return 100, ["Listed as confirmed malware in an advisory database"]
+    findings = [f for f in findings if f.category != "vulnerability"]
     seen: Counter = Counter()
     total = 0
     for f in findings:

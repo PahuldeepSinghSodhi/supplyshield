@@ -178,7 +178,7 @@ def scan_python(root: Path) -> list[Finding]:
         if path.stat().st_size > MAX_FILE_BYTES:
             continue
         rel = path.relative_to(root).as_posix()
-        text = path.read_text(encoding="utf-8", errors="replace")
+        text = path.read_text(encoding="utf-8-sig", errors="replace")
         install_time = rel == "setup.py"
         try:
             tree = ast.parse(text, filename=rel)

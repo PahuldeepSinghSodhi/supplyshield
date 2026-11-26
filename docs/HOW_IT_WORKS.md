@@ -77,9 +77,36 @@ Package names are compared with lists of popular packages using **Damerau–Leve
 single-letter edits between two words, where swapping two neighbouring letters counts as **one** edit.
 `lodahs` → `lodash` is 1 edit, so it is flagged. Real names such as `requests` are never flagged.
 
-## 6. Limits
+## 6. Known vulnerabilities and known malware (`--vulns`)
+
+Behaviour analysis finds **new** malicious code, but it can't know that an old, honest version has a publicly
+reported security bug. That is the job of pip-audit and npm audit, and `--vulns` adds the same check
+([advisories.py](../supplyshield/advisories.py)):
+
+1. Send the exact **name, ecosystem and version** to [OSV.dev](https://osv.dev), the open vulnerability database
+   that pip-audit can use and that includes the GitHub Advisory Database behind npm audit.
+2. Merge duplicate records of the same bug (one bug often has both a GitHub `GHSA-` and a Python `PYSEC-` entry).
+3. Report each bug with its CVE number, severity and the **version that fixes it**.
+4. If the version is listed as **confirmed malware** (an OpenSSF `MAL-` entry), the verdict becomes MALICIOUS.
+
+| | Behaviour analysis (default) | `--vulns` lookup |
+|---|---|---|
+| Finds | **New**, unreported malicious code | **Known** bugs and **known** malware |
+| Needs internet | No | Yes (name + version only) |
+| Affects malice score | Yes | Only for confirmed malware |
+| Affects CI exit code | Yes | Yes (any known vulnerability gives exit 1) |
+
+A known vulnerability does **not** make a package "malicious": it's a bug in an honest package, so it gets its own
+section in the report. With `diff --vulns`, SupplyShield also reports which known vulnerabilities an update
+**fixes**, so you can see whether an upgrade is worth it and what new behaviour it brings.
+
+**Cross-check:** on `requests` 2.19.1, SupplyShield and pip-audit report the same 5 vulnerabilities with the same
+fix versions.
+
+## 7. Limits
 
 - Code assembled at run time (`getattr(os, "sys" + "tem")`) is invisible to static analysis. GuardDog caught
   our two evasive samples; adding rules for such dynamic lookups is the next step.
 - The test corpus is small and self-built, so results show feasibility, not real-world accuracy.
-- SupplyShield does not find *known vulnerable versions*. Use it **alongside** pip-audit / npm audit.
+- `--vulns` only knows what has already been reported to advisory databases; that's exactly why the behaviour
+  analysis exists.

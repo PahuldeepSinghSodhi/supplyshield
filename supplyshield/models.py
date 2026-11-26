@@ -11,6 +11,7 @@ SEVERITY_POINTS = {"low": 3, "medium": 10, "high": 25, "critical": 40}
 class Finding:
     rule_id: str          # e.g. PY-DECODE-EXEC
     category: str         # install | exec | obfuscation | process | network | secrets | typosquat | dependency
+                          # | vulnerability (known bug, from advisories) | malware (known malware, from advisories)
     severity: str         # low | medium | high | critical
     file: str             # path relative to the package root
     line: int             # 0 when not tied to a line
@@ -21,6 +22,8 @@ class Finding:
     new_in_version: bool = False  # set by diff.py when absent from the previous version
 
     def key(self) -> tuple[str, str]:
+        if self.category in ("vulnerability", "malware"):
+            return (self.rule_id, self.evidence)  # one advisory = one identity
         return (self.rule_id, self.file)
 
     def to_dict(self) -> dict:
@@ -37,6 +40,12 @@ class Report:
     chains: list[str] = field(default_factory=list)
     score: int = 0
     verdict: str = "SAFE"  # SAFE | SUSPICIOUS | MALICIOUS
+    vulns_checked: bool = False   # True when the advisory lookup (--vulns) ran successfully
+    notes: list[str] = field(default_factory=list)
+
+    @property
+    def vulnerabilities(self) -> list[Finding]:
+        return [f for f in self.findings if f.category == "vulnerability"]
 
     def to_dict(self) -> dict:
         d = asdict(self)

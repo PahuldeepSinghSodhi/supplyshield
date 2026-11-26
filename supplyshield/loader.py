@@ -68,7 +68,7 @@ def read_metadata(root: Path, ecosystem: str) -> tuple[str, str, list[str]]:
     """Return (name, version, dependency names)."""
     if ecosystem == "npm":
         try:
-            data = json.loads((root / "package.json").read_text(encoding="utf-8"))
+            data = json.loads((root / "package.json").read_text(encoding="utf-8-sig"))
         except (OSError, json.JSONDecodeError):
             return root.name, "?", []
         deps = list((data.get("dependencies") or {}).keys())
@@ -78,7 +78,7 @@ def read_metadata(root: Path, ecosystem: str) -> tuple[str, str, list[str]]:
     pyproject = root / "pyproject.toml"
     if pyproject.is_file():
         try:
-            proj = tomllib.loads(pyproject.read_text(encoding="utf-8")).get("project", {})
+            proj = tomllib.loads(pyproject.read_text(encoding="utf-8-sig")).get("project", {})
             name = proj.get("name", name)
             version = proj.get("version", version)
             deps = [re.split(r"[<>=!~;\[ ]", d, maxsplit=1)[0] for d in proj.get("dependencies", [])]
@@ -86,7 +86,7 @@ def read_metadata(root: Path, ecosystem: str) -> tuple[str, str, list[str]]:
             pass
     setup_py = root / "setup.py"
     if setup_py.is_file():
-        text = setup_py.read_text(encoding="utf-8", errors="replace")
+        text = setup_py.read_text(encoding="utf-8-sig", errors="replace")
         if m := re.search(r"name\s*=\s*['\"]([^'\"]+)", text):
             name = m.group(1)
         if m := re.search(r"version\s*=\s*['\"]([^'\"]+)", text):
@@ -95,7 +95,7 @@ def read_metadata(root: Path, ecosystem: str) -> tuple[str, str, list[str]]:
             deps += [re.split(r"[<>=!~;\[ ]", d.strip(" '\"\n"), maxsplit=1)[0]
                      for d in m.group(1).split(",") if d.strip(" '\"\n")]
     for meta in list(root.glob("PKG-INFO")) + list(root.glob("*.dist-info/METADATA")):
-        text = meta.read_text(encoding="utf-8", errors="replace")
+        text = meta.read_text(encoding="utf-8-sig", errors="replace")
         if m := re.search(r"^Name:\s*(.+)$", text, re.M):
             name = m.group(1).strip()
         if m := re.search(r"^Version:\s*(.+)$", text, re.M):

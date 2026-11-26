@@ -51,7 +51,7 @@ B64_DECODE = re.compile(r"""Buffer\.from\([^)]*['"]base64['"]\s*\)|\batob\s*\(""
 
 
 def _scan_js(path: Path, rel: str, install_time: bool) -> list[Finding]:
-    text = path.read_text(encoding="utf-8", errors="replace")
+    text = path.read_text(encoding="utf-8-sig", errors="replace")
     out: list[Finding] = []
     lines = text.splitlines()
     for lineno, line in enumerate(lines, 1):
@@ -83,7 +83,7 @@ def scan_npm(root: Path) -> list[Finding]:
     findings: list[Finding] = []
     install_files: set[str] = set()
     try:
-        pkg = json.loads((root / "package.json").read_text(encoding="utf-8"))
+        pkg = json.loads((root / "package.json").read_text(encoding="utf-8-sig"))
     except (OSError, json.JSONDecodeError):
         pkg = {}
 

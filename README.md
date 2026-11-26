@@ -27,6 +27,7 @@ Course: **Cybersecurity for Mobility Systems** · Instructor: **Dr. Rohit Ahuja*
 | **Gap in existing tools** | `pip-audit`, `npm audit` and Dependabot only ask *"Is this version on a list of known vulnerabilities?"* A brand-new malicious package is on no list, so they report it as clean. |
 | **Our approach** | SupplyShield asks *"What does this package's code actually do?"* It statically analyses the code without ever running it. |
 | **What's new** | **Attack-chain scoring** (dangerous *combinations* of signals) and **version-diff analysis** (what an update *added*). |
+| **Plus known bugs** | `--vulns` also does the pip-audit / npm audit job: it looks the exact version up for **known vulnerabilities and confirmed malware**, so one command covers both new and known threats. |
 | **Result** | Caught **10/12** malicious test packages; pip-audit and npm audit caught **0/12**. Matches the specialised tool GuardDog while being **~700× faster** and grading every finding. |
 
 ---
@@ -89,6 +90,7 @@ flowchart LR
 | **Network and system commands**, including `curl … \| sh` | How stolen data leaves and further malware arrives |
 | **Typosquatting**: `reqeusts`, `lodahs` | One typo installs malware |
 | **Version diff**: behaviour and dependencies *added* by an update | How event-stream, ua-parser-js and XZ Utils arrived |
+| **Known vulnerabilities and known malware** (`--vulns`): CVEs for this exact version, fix versions, confirmed-malware listings | Covers what pip-audit / npm audit find, plus "this update fixes N CVEs" in `diff` |
 
 ➡️ The scoring and rules are explained in plain language in **[docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md)**.
 
@@ -112,7 +114,7 @@ flowchart LR
 - 🟢 **GuardDog** ties on detection with different mistakes. It caught our evasive samples, but missed the typosquats, gives no severity (a harmless `node-gyp` script and a `curl | sh` script look identical), has no version diff, and is ~700× slower.
 - 🔁 **Version diff** isolated exactly what both poisoned updates added. No other tool produces this report.
 
-**Honest limits:** the corpus is small and self-built (feasibility, not real-world accuracy); SupplyShield missed 2 deliberately evasive samples; it does not find known vulnerable versions, so it **complements** pip-audit and npm audit.
+**Honest limits:** the corpus is small and self-built (feasibility, not real-world accuracy); SupplyShield missed 2 deliberately evasive samples. The table above measures **behaviour analysis only**; the optional `--vulns` lookup (added after this evaluation) covers known vulnerable versions. Checked against pip-audit on `requests` 2.19.1, both report the same 5 vulnerabilities with the same fix versions.
 
 Reproduce everything: `python eval/run_eval.py`; per-sample output: [eval/results.md](eval/results.md).
 
@@ -127,9 +129,10 @@ Reproduce everything: `python eval/run_eval.py`; per-sample output: [eval/result
 | ↳ [`rules_npm.py`](supplyshield/rules_npm.py) | npm install-script and JavaScript rules | npm support |
 | ↳ [`scoring.py`](supplyshield/scoring.py) | Attack-chain scoring and verdicts | **novelty #1** |
 | ↳ [`analyzer.py`](supplyshield/analyzer.py) | Scan and version-diff logic | **novelty #2** |
+| ↳ [`advisories.py`](supplyshield/advisories.py) | Known-vulnerability / known-malware lookup (`--vulns`) | the pip-audit / npm audit part |
 | [`samples/`](samples/) | 20 inert test packages + labels + generator | the test data |
 | [`eval/`](eval/) | Comparison script and results | **the results** |
-| [`tests/`](tests/) | 20 unit tests (run automatically on GitHub) | code quality |
+| [`tests/`](tests/) | 27 unit tests (run automatically on GitHub; vulnerability tests use a fake database, so no internet) | code quality |
 | [`paper/`](paper/) | Article [PDF](paper/SupplyShield.pdf), Overleaf source and ready-to-upload zip | **the article** |
 | [`presentation/`](presentation/) | Talk script, likely questions, demo script | the presentation |
 | [`docs/`](docs/) | Plain-language explanation of the method | answering questions |
@@ -141,13 +144,44 @@ Reproduce everything: `python eval/run_eval.py`; per-sample output: [eval/result
 ```bash
 pip install -e .                                # optional: adds the `supplyshield` command
 supplyshield scan <package> [<package> ...]     # folder, .tar.gz/.tgz, .whl or .zip
+supplyshield scan <package> --vulns            # + known vulnerabilities / malware (needs internet)
 supplyshield scan <package> --json              # machine-readable output
 supplyshield diff <old-version> <new-version>   # what did this update add?
+supplyshield diff <old> <new> --vulns           # ...and which known vulnerabilities does it fix?
 python -m pytest                                # run the unit tests
 ```
 
-Exit codes `0` safe · `1` suspicious · `2` malicious, so it can block a CI pipeline.
-To check a registry package without installing it: `pip download --no-deps --no-binary :all: <name>` or `npm pack <name>`, then scan the archive.
+Exit codes `0` safe · `1` suspicious or has known vulnerabilities · `2` malicious, so it can block a CI pipeline.
+
+**About `--vulns`.** This is the pip-audit / npm audit part. SupplyShield looks up the exact name and version in
+[OSV.dev](https://osv.dev), the open vulnerability database that pip-audit can use and that includes the GitHub
+Advisory Database behind npm audit. It also catches versions listed as confirmed malware (OpenSSF `MAL-` entries).
+Duplicate records of the same bug are merged. Known vulnerabilities are shown in their own section and fail the
+CI gate, but they do not raise the *malice* score: a bug in an honest package is not malware. This is the only
+network feature; only the package name, ecosystem and version are sent, and without the flag SupplyShield stays
+fully offline.
+
+### Checking a registry package before installing it
+
+Download the package **without installing it**, scan the file, and install that exact file only if it is SAFE:
+
+```bash
+# Python: fetch a ready-built wheel only
+pip download <name> --no-deps --only-binary :all: -d checks
+supplyshield scan checks/<name>-<version>-*.whl
+pip install checks/<name>-<version>-*.whl          # only if SAFE
+
+# npm
+npm pack <name> --ignore-scripts
+supplyshield scan <name>-<version>.tgz
+npm install ./<name>-<version>.tgz                 # only if SAFE
+```
+
+> ⚠️ **Do not use `pip download --no-binary :all:`** to fetch a source package for checking. To download a
+> source package, pip prepares its metadata, which can run the package's own `setup.py`. A malicious package
+> would then execute during the "safe" download step. `--only-binary :all:` fetches wheels, which contain no
+> install-time code. If a package publishes only a source archive, download the `.tar.gz` file directly from
+> its PyPI page instead.
 
 ## 🔐 Safety
 
