@@ -68,15 +68,20 @@ CRITICAL PY-DOWNLOAD-EXEC    setup.py:9  [runs at install, NEW in this version]
 20-package labelled corpus (12 malicious, 8 benign; PyPI and npm), see [`samples/`](samples/).
 Reproduce with `python eval/run_eval.py`; full per-sample output in [`eval/results.md`](eval/results.md).
 
-| Tool | Samples covered | Detected | Missed | False alarms | Precision | Recall |
-|---|---|---|---|---|---|---|
-| **SupplyShield** | 20 | 10 | 2 | 1 | 0.91 | 0.83 |
-| Bandit 1.9 (medium/high issues) | 10 (Python only) | 3 | 3 | 0 | 1.00 | 0.50 |
-| pip-audit 2.10 | 10 (Python only) | 0 | 6 | 0 | – | 0.00 |
-| npm audit (npm 11) | 10 (npm only) | 0 | 6 | 0 | – | 0.00 |
+| Tool | Samples covered | Detected | Missed | False alarms | Precision | Recall | Time per package |
+|---|---|---|---|---|---|---|---|
+| **SupplyShield** | 20 | 10 | 2 | 1 | 0.91 | 0.83 | 6 ms |
+| GuardDog 2.10 (Semgrep 1.187) | 20 | 10 | 2 | 1 | 0.91 | 0.83 | 4.2 s |
+| Bandit 1.9 (medium/high issues) | 10 (Python only) | 3 | 3 | 0 | 1.00 | 0.50 | 0.25 s |
+| pip-audit 2.10 | 10 (Python only) | 0 | 6 | 0 | – | 0.00 | 0.6 s |
+| npm audit (npm 11) | 10 (npm only) | 0 | 6 | 0 | – | 0.00 | 1.0 s |
 
-GuardDog was not evaluated: its installation failed on the test machine (Windows 11, Python 3.14) because
-native dependencies did not compile.
+**GuardDog** ties on detection but makes different mistakes. It catches both evasive samples (SupplyShield misses
+them), misses both typosquats (its name check needs registry metadata, so local-folder scans skip it), and
+false-alarms on a benign `node-gyp` install script. It reports matched rules without severity, so a harmless
+native build and a `curl | sh` install script look identical. SupplyShield rates them low and critical, explains
+attack chains and version diffs, and is about 700× faster. GuardDog 3.x would not build on Windows, so 2.10.0
+(the newest with prebuilt packages for Python 3.13) was used.
 
 Version diff caught both poisoned updates (`colorlib` 1.0→1.1, `minilog-pretty` 1.0.0→1.0.1), including the
 new dependency added in the npm one.
@@ -85,9 +90,8 @@ new dependency added in the npm one.
 real-world accuracy. SupplyShield missed both deliberately evasive samples (names assembled at run time) and
 raised one false alarm (a legitimate `setup.py` that calls `git`). pip-audit and npm audit are not designed to
 find new malware; they find *known vulnerable versions*, which SupplyShield does not. The tools are
-complementary. Other behaviour-based tools exist, notably Datadog's GuardDog and commercial services such
-as Socket.dev; SupplyShield's distinguishing features are version-diff analysis, attack-chain scoring with
-explanations, and zero dependencies.
+complementary. Commercial services such as Socket.dev also analyse behaviour. SupplyShield's distinguishing
+features are version-diff analysis, graded attack-chain scoring with explanations, speed, and zero dependencies.
 
 ## Project layout
 

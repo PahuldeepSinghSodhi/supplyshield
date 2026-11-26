@@ -34,6 +34,9 @@ SupplyShield asks: *"What does this package's code actually do?"*
 - SupplyShield: **10/12 detected, 1 false alarm** (precision 0.91, recall 0.83).
 - pip-audit and npm audit: **0/12**. They are built for known vulnerabilities, not new malware.
 - Bandit (generic Python analyser): 3/6. It rated `curl ... | sh` in an install hook as *low* severity.
+- GuardDog (Datadog's specialised tool): also 10/12 with 1 false alarm, but **different mistakes**. It caught the
+  evasive samples and missed the typosquats. It can't tell a harmless install script from `curl | sh`, has no
+  version diff, and took **4.2 s per package vs 6 ms**.
 
 ## 7. Honest limits and close (30 s)
 - Small self-made corpus, so this shows feasibility, not real-world accuracy.
@@ -46,9 +49,11 @@ SupplyShield asks: *"What does this package's code actually do?"*
 ## Likely questions
 
 **Q: Isn't this what GuardDog or Socket.dev already do?**
-They also analyse behaviour, and I cite them. My differences are the version diff (GuardDog compares a release
-with its GitHub source, not with the previous release), attack-chain scoring with explanations, and zero dependencies.
-GuardDog wouldn't install on my Windows/Python 3.14 machine, so I compared it qualitatively, not with numbers.
+They also analyse behaviour, and I tested GuardDog directly. It detects as many samples as mine, so I don't
+claim better detection. My differences: the version diff (GuardDog compares a release with its GitHub source, not
+the previous release), graded severity and attack chains (GuardDog flags a harmless `node-gyp` script and a
+`curl | sh` script identically), explanations, no dependencies, and about 700× faster. GuardDog caught my evasive
+samples, so adding dynamic-lookup rules is my next improvement.
 
 **Q: Why not test on real malware?**
 Running or distributing real malware is unsafe. The samples imitate documented attack patterns with harmless payloads
