@@ -11,7 +11,7 @@
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
 **Pahuldeep Singh Sodhi** · Roll No. 102306051 · Thapar Institute of Engineering and Technology (TIET)<br>
-Cybersecurity course project · Instructor: **Dr. Rohit Ahuja**
+Course: **Cybersecurity for Mobility Systems** · Instructor: **Dr. Rohit Ahuja**
 
 [📄 **Read the article (PDF)**](paper/SupplyShield.pdf) · [🧾 Overleaf source](paper/) · [🧠 How it works](docs/HOW_IT_WORKS.md) · [📊 Full results](eval/results.md) · [🎤 Talk notes](presentation/talk-notes.md)
 
