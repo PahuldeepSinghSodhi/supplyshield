@@ -20,6 +20,37 @@ _B64_BLOB = re.compile(r"[A-Za-z0-9+/=]{160,}")
 _HEX_BLOB = re.compile(r"(?:\\x[0-9a-fA-F]{2}){40,}")
 
 
+# Folders and files that ship in source archives but are never installed or run by users
+# (test suites, documentation, examples). Learned from real data: popular packages such as
+# typing-extensions and cffi trip many rules only inside these files.
+NON_SHIPPED_DIRS = {"tests", "test", "testing", "__tests__", "docs", "doc", "examples", "example",
+                    "demo", "demos", "benchmarks", "benchmark", "bench"}
+NON_SHIPPED_FILES = re.compile(r"(^|/)(test_[^/]*\.py|[^/]*_test\.py|conftest\.py|noxfile\.py)$")
+
+
+def is_non_shipped(rel: str) -> bool:
+    parts = rel.split("/")
+    return any(p in NON_SHIPPED_DIRS for p in parts[:-1]) or bool(NON_SHIPPED_FILES.search(rel))
+
+
+def downgrade_non_shipped(findings: list[Finding]) -> list[Finding]:
+    """Findings in test/docs/example files become low severity: users never install or run that code."""
+    for f in findings:
+        if f.severity != "low" and not f.install_time and is_non_shipped(f.file):
+            f.severity = "low"
+            f.explanation += " (Found in a test, documentation or example file, which is not installed.)"
+    return findings
+
+
+def unreadable_finding(rel: str, error: OSError) -> Finding:
+    return Finding(
+        "FILE-UNREADABLE", "unreadable", "low", rel, 0, str(error)[:80],
+        "This file could not be read, so it was not analysed. Antivirus software blocks files it "
+        "recognises as malware, which is itself a strong warning sign.",
+        "Check your antivirus log for this file before installing the package.",
+    )
+
+
 def shannon_entropy(s: str) -> float:
     if not s:
         return 0.0

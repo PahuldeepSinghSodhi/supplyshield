@@ -24,6 +24,8 @@ CHAINS = [
      {"install", "process"}, "install_time_process", 20),
     ("Hidden payload: obfuscated code that is executed",
      {"obfuscation", "exec"}, None, 20),
+    ("Install-time reconnaissance: fingerprints the machine during installation",
+     {"install", "recon"}, "install_time_recon", 20),
 ]
 
 
@@ -49,10 +51,9 @@ def score(findings: list[Finding]) -> tuple[int, list[str]]:
     for name, needed, cond, bonus in CHAINS:
         if not needed <= cats:
             continue
-        if cond == "install_time_process" and not any(
-            f.category == "process" and f.install_time for f in findings
-        ):
-            continue
+        if cond and not any(f.category == cond.rsplit("_", 1)[-1] and f.install_time and f.severity != "low"
+                            for f in findings):
+            continue  # e.g. "install_time_process": a process finding that itself runs at install time
         chains.append(name)
         total += bonus
     return min(total, 100), chains

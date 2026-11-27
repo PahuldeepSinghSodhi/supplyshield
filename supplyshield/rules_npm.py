@@ -9,7 +9,7 @@ import json
 import re
 from pathlib import Path
 
-from .common import blob_findings, sensitive_path_hits
+from .common import blob_findings, downgrade_non_shipped, sensitive_path_hits, unreadable_finding
 from .models import Finding
 
 MAX_FILE_BYTES = 2_000_000
@@ -37,10 +37,22 @@ RULES = [
      "this is how stolen data leaves the machine.",
      "Check the destination address and what data is sent."),
     ("NPM-ENV-DUMP", "secrets", "high",
-     re.compile(r"JSON\.stringify\(\s*process\.env\s*\)|Object\.(?:keys|entries|values)\(\s*process\.env\s*\)|\.\.\.\s*process\.env"),
-     "The package copies ALL environment variables, which usually hold API keys, cloud tokens and "
-     "passwords.",
+     re.compile(r"(?:JSON\.stringify|String|querystring\.stringify|new\s+URLSearchParams)\(\s*process\.env\s*\)"),
+     "The package turns ALL environment variables into text that can be sent somewhere. Environment "
+     "variables usually hold API keys, cloud tokens and passwords.",
      "Libraries should read only the variables they need. Treat as credential theft."),
+    # Learned from real data: `debug` lists variable names to find its own DEBUG_* settings, and many
+    # tools spread process.env into a child process's environment. Common and harmless on its own.
+    ("NPM-ENV-COPY", "secrets", "low",
+     re.compile(r"Object\.(?:keys|entries|values)\(\s*process\.env\s*\)|\.\.\.\s*process\.env"),
+     "The package reads or copies all environment variables. This is common (for example, to pass them to "
+     "a child process) and only dangerous if the data is then sent somewhere.",
+     "Check where the data goes."),
+    ("NPM-RECON", "recon", "medium",
+     re.compile(r"\.(?:hostname|userInfo|networkInterfaces)\s*\(\s*\)"),
+     "The package collects identifying details about the machine or user (host name, user name, network "
+     "addresses). Install-time malware does this first to fingerprint its victims.",
+     "Check why a library needs to know who and where it is running."),
     ("NPM-OBF-IDENTIFIERS", "obfuscation", "medium",
      re.compile(r"\b_0x[0-9a-f]{4,}\b"),
      "Identifiers like _0x1a2b are produced by JavaScript obfuscators, which malware uses to hide its "
@@ -51,11 +63,16 @@ B64_DECODE = re.compile(r"""Buffer\.from\([^)]*['"]base64['"]\s*\)|\batob\s*\(""
 
 
 def _scan_js(path: Path, rel: str, install_time: bool) -> list[Finding]:
-    text = path.read_text(encoding="utf-8-sig", errors="replace")
+    try:
+        text = path.read_text(encoding="utf-8-sig", errors="replace")
+    except OSError as e:  # e.g. blocked by antivirus: report it, never crash
+        return [unreadable_finding(rel, e)]
     out: list[Finding] = []
     lines = text.splitlines()
     for lineno, line in enumerate(lines, 1):
         for rule, cat, sev, rx, expl, fix in RULES:
+            if rule == "NPM-DYNAMIC-EXEC" and not install_time:
+                sev = "medium"  # eval in library code is often a template/compiler; high at install time
             if rx.search(line):
                 out.append(Finding(rule, cat, sev, rel, lineno, line.strip()[:100], expl, fix, install_time))
         hits = sensitive_path_hits(line)
@@ -76,7 +93,7 @@ def _scan_js(path: Path, rel: str, install_time: bool) -> list[Finding]:
     for f in blob_findings(text, rel):
         f.install_time = install_time
         out.append(f)
-    return out
+    return downgrade_non_shipped(out)
 
 
 def scan_npm(root: Path) -> list[Finding]:

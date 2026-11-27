@@ -26,7 +26,7 @@ Roll No.: 102306051 \quad Course: Cybersecurity For Mobility Systems\\  \quad In
 \maketitle
 
 \begin{abstract}
-Modern applications are built from hundreds of open-source packages from registries such as PyPI and npm, and attackers exploit this by publishing malicious packages or poisoning updates of popular ones. The free tools most developers use, such as \texttt{pip-audit} and \texttt{npm audit}, only match dependencies against databases of \emph{known} vulnerabilities, so they report a brand-new malicious package as clean. This article presents \emph{SupplyShield}, a dependency-free static analyser for PyPI and npm packages that inspects what a package's code does before installation. It adds \emph{version-diff analysis}, which isolates behaviour introduced by an update, and \emph{attack-chain scoring}, which rates combinations of signals rather than single ones. An optional advisory lookup also reports known vulnerabilities and known malware, so one tool covers both new and known threats. On 20 inert test packages, SupplyShield detected 10 of 12 malicious samples with one false alarm. \texttt{pip-audit} and \texttt{npm audit} detected none, and Bandit detected 3 of 6. The specialised tool GuardDog matched SupplyShield's detection rate with different errors. SupplyShield was about 700 times faster, graded its findings by severity, and was the only tool to report what an update added.
+Modern applications are built from hundreds of open-source packages from registries such as PyPI and npm, and attackers exploit this by publishing malicious packages or poisoning updates of popular ones. The free tools most developers use, such as \texttt{pip-audit} and \texttt{npm audit}, only match dependencies against databases of \emph{known} vulnerabilities, so they report a brand-new malicious package as clean. This article presents \emph{SupplyShield}, a dependency-free static analyser for PyPI and npm packages that inspects what a package's code does before installation. It adds \emph{version-diff analysis}, which isolates behaviour introduced by an update, and \emph{attack-chain scoring}, which rates combinations of signals rather than single ones. An optional advisory lookup also reports known vulnerabilities and known malware, so one tool covers both new and known threats. On 20 inert test packages, SupplyShield detected 10 of 12 malicious samples with one false alarm. \texttt{pip-audit} and \texttt{npm audit} detected none, and Bandit detected 3 of 6. The specialised tool GuardDog matched SupplyShield's detection rate with different errors. SupplyShield was about 700 times faster, graded its findings by severity, and was the only tool to report what an update added. On real data (19 malware samples from Datadog's dataset and 40 popular packages), SupplyShield detected 18 of 19 malware samples, against none for \texttt{pip-audit} and \texttt{npm audit}. After fixes learned from a first blind run, it falsely flagged 5 of 20 unseen popular packages, against 7 for GuardDog.
 
 \keywords{Software supply chain security \and Malicious packages \and Static analysis \and PyPI \and npm}
 \end{abstract}
@@ -85,7 +85,7 @@ No third-party dependencies        & --         & --         & --         & n/a 
 
 \paragraph{Threat model.} We assume an attacker who can publish a package to PyPI or npm, either under a new (possibly look-alike) name or as a new release of an existing package after taking over a maintainer account. The attacker's goal is to run code on the developer's or build server's machine, usually at install time, to steal secrets or download further malware. The defender is a developer or a build pipeline that can inspect a package archive before installing it, but does not have a sandbox, a trained model or registry-wide data. SupplyShield is designed for this defender.
 
-\paragraph{Implementation.} SupplyShield is about 1{,}000 lines of Python using only the standard library (\texttt{ast}, \texttt{re}, \texttt{tarfile}, \texttt{zipfile}, \texttt{tomllib}, \texttt{urllib}). It never installs, imports or runs analysed code, works offline except for the optional advisory lookup, and comes with a command-line interface, JSON output, a pre-install guard, 39 unit tests and continuous integration. Fig.~\ref{fig:arch} shows its pipeline.
+\paragraph{Implementation.} SupplyShield is about 1{,}100 lines of Python using only the standard library (\texttt{ast}, \texttt{re}, \texttt{tarfile}, \texttt{zipfile}, \texttt{tomllib}, \texttt{urllib}). It never installs, imports or runs analysed code, works offline except for the optional advisory lookup, and comes with a command-line interface, JSON output, a pre-install guard, 49 unit tests and continuous integration. Fig.~\ref{fig:arch} shows its pipeline.
 
 \begin{figure}[t]
 \centering
@@ -233,13 +233,36 @@ GuardDog matched SupplyShield's totals with different errors. It caught both eva
 
 \paragraph{Known-vulnerability lookup.} The corpus packages are unpublished, so \texttt{--vulns} does not change Table~\ref{tab:results}. We checked it separately on real versions. For \texttt{requests} 2.19.1, SupplyShield and \texttt{pip-audit} reported the same five vulnerabilities with the same fixed versions (2.20.0 to 2.33.0). For \texttt{lodash} 4.17.15 on npm, SupplyShield reported five known vulnerabilities, including CVE-2020-8203.
 
+\paragraph{Real-world data.} We then tested on real packages. The malicious set was 20 samples drawn at random (seed 42) from the 2{,}503 PyPI and 25{,}267 npm \emph{malicious-intent} samples in Datadog's human-triaged dataset~\cite{datadog_dataset}. Its files were only read: each sample was extracted to a temporary folder, scanned and deleted. One sample was excluded because the machine's antivirus blocked reading it. The benign sets were the 20 most-downloaded PyPI and npm packages (\emph{main}) and the next 20 (\emph{holdout}). The holdout packages were never used while changing the rules. Table~\ref{tab:real} reports a \emph{blind} first run with every tool, then SupplyShield after fixes.
+
+\begin{table}[t]
+\centering
+\caption{Real data: 19 malware samples, 20 main and 20 holdout benign packages. GuardDog timed out (180\,s) on 3 malware and 1 benign package; timeouts are not counted.}
+\label{tab:real}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lccc}
+\toprule
+Tool & Malware detected & False alarms (main) & False alarms (holdout) \\
+\midrule
+SupplyShield 0.1 (blind) & 17/19 & 9/20 & 8/20 \\
+\textbf{SupplyShield 0.2} & \textbf{18/19}$^{*}$ & \textbf{3/20}$^{*}$ & \textbf{5/20} \\
+GuardDog 2.10 & 13/16 & 7/19 & 7/20 \\
+Bandit 1.9 (Python) & 8/10 & 8/10 & 9/10 \\
+pip-audit / npm audit & 0/19 & 0/20 & -- \\
+\bottomrule
+\multicolumn{4}{l}{\scriptsize $^{*}$ Same samples that informed the fixes; the holdout column is independent.}
+\end{tabular}
+\end{table}
+
+The blind run confirmed that advisory scanners see nothing: \texttt{pip-audit} called every Python sample free of known vulnerabilities. It also exposed SupplyShield's main weakness, which the synthetic corpus could not show: it flagged 45\% of popular packages, including \texttt{requests} and \texttt{cryptography}. Tracing each finding to its file showed general causes. Any function from a networking library counted as network access. Test and documentation files, which ship in source archives but are never installed, were scored like library code. Copying the environment to start a subprocess looked like theft. And \texttt{exec} is normal in metaprogramming libraries. Version 0.2 fixes these with general rules: network access means a call that opens a connection; findings in test, documentation and example files become low; only turning the whole environment into text counts as theft; and \texttt{exec} is high only in install-time code. Two misses led to two additions: environment serialisation via \texttt{\_\_str\_\_}, and an \emph{install-time reconnaissance} chain for host fingerprinting. On the unseen holdout packages, false alarms fell from 8 to 5 of 20, below GuardDog's 7, while malware detection rose from 17 to 18 of 19. One sample was lost, because its only signal was \texttt{exec} in library code. The remaining false alarms come from packages that legitimately compile code at install time (\texttt{setuptools}) and from substring matching of secret file names (\texttt{pygments} lists \texttt{id\_rsa} as a file type). With samples this small, the intervals are wide, so these are early real-world evidence rather than final accuracy.
+
 \paragraph{Discussion.} For packages too new for any advisory database, common free scanners give no protection, while behaviour analysis catches most attacks. SupplyShield does not out-detect a specialised tool, but adds graded verdicts, attack chains, version diffs and speed without any external engine. With the advisory lookup, one command now covers both what \texttt{pip-audit} and \texttt{npm audit} find (known bugs) and what they cannot (new malicious code).
 
 %=====================================================================
 \section{Limitations and Conclusion}
 %=====================================================================
 
-The corpus is small and self-built, so the results show feasibility, not real-world accuracy. Next steps are testing on real malware datasets~\cite{ohm2020backstabber} and GuardDog's latest release, adding rules for dynamic API lookups to close the evasion gap GuardDog exposed, and pairing static with sandboxed dynamic analysis.
+The synthetic corpus is small and self-built, and the real-data samples are small too: 19 malware samples from one dataset, which was mostly found by GuardDog, and only popular benign packages. Next steps are larger real-data tests~\cite{ohm2020backstabber}, exact matching of secret file names, GuardDog's latest release, adding rules for dynamic API lookups to close the evasion gap GuardDog exposed, and pairing static with sandboxed dynamic analysis.
 
 Supply chain attacks turn trust in open-source packages into a route for malware, while common free tools only recognise known problems. SupplyShield shows that a small, dependency-free analyser can examine what a package does before installation, explain its findings in plain language, and reveal what an update adds, detecting 10 of 12 malicious packages that \texttt{pip-audit} and \texttt{npm audit} reported as clean, while also covering the known vulnerabilities those tools report. Because it is small, fast and returns a simple exit code, it can sit quietly in front of the install commands of developers, build pipelines and AI coding agents alike.
 

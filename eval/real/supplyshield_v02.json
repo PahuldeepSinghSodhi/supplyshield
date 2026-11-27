@@ -1,0 +1,929 @@
+[
+  {
+    "set": "main",
+    "label": "malicious",
+    "ecosystem": "pypi",
+    "name": "dasdsajdjsaasddsad",
+    "version": "3.0.0",
+    "verdict": "SAFE",
+    "score": 10,
+    "flagged": false,
+    "rules": [
+      "PY-DYNAMIC-EXEC"
+    ],
+    "chains": [],
+    "ms": 121
+  },
+  {
+    "set": "main",
+    "label": "malicious",
+    "ecosystem": "pypi",
+    "name": "artifact-lab-3-package-24ddbc49",
+    "version": "0.5.0",
+    "verdict": "MALICIOUS",
+    "score": 70,
+    "flagged": true,
+    "rules": [
+      "PY-ENV-DUMP",
+      "PY-NETWORK"
+    ],
+    "chains": [
+      "Credential exfiltration: reads secrets and has network access"
+    ],
+    "ms": 16
+  },
+  {
+    "set": "main",
+    "label": "malicious",
+    "ecosystem": "pypi",
+    "name": "macaqua",
+    "version": "99.7",
+    "verdict": "SUSPICIOUS",
+    "score": 55,
+    "flagged": true,
+    "rules": [
+      "PY-INSTALL-HOOK",
+      "PY-NETWORK",
+      "PY-RECON"
+    ],
+    "chains": [],
+    "ms": 10
+  },
+  {
+    "set": "main",
+    "label": "malicious",
+    "ecosystem": "pypi",
+    "name": "libidi",
+    "version": "0.1",
+    "verdict": "MALICIOUS",
+    "score": 100,
+    "flagged": true,
+    "rules": [
+      "OBF-BLOB",
+      "PY-DECODE-EXEC",
+      "PY-SETUP-CODE"
+    ],
+    "chains": [
+      "Hidden payload: obfuscated code that is executed"
+    ],
+    "ms": 184
+  },
+  {
+    "set": "main",
+    "label": "malicious",
+    "ecosystem": "pypi",
+    "name": "kera-preprocessing",
+    "version": "94.6",
+    "verdict": "MALICIOUS",
+    "score": 75,
+    "flagged": true,
+    "rules": [
+      "PY-INSTALL-HOOK",
+      "PY-NETWORK",
+      "PY-PROCESS",
+      "PY-RECON"
+    ],
+    "chains": [],
+    "ms": 13
+  },
+  {
+    "set": "main",
+    "label": "malicious",
+    "ecosystem": "pypi",
+    "name": "esqguipippost",
+    "version": "2.7",
+    "verdict": "MALICIOUS",
+    "score": 65,
+    "flagged": true,
+    "rules": [
+      "OBF-BLOB",
+      "PY-PROCESS",
+      "PY-SETUP-CODE"
+    ],
+    "chains": [
+      "Install-time command execution: runs system commands during installation"
+    ],
+    "ms": 15
+  },
+  {
+    "set": "main",
+    "label": "malicious",
+    "ecosystem": "pypi",
+    "name": "cryptograohy",
+    "version": "0.6.4",
+    "verdict": "SUSPICIOUS",
+    "score": 50,
+    "flagged": true,
+    "rules": [
+      "PY-INSTALL-HOOK",
+      "TYPOSQUAT"
+    ],
+    "chains": [],
+    "ms": 13
+  },
+  {
+    "set": "main",
+    "label": "malicious",
+    "ecosystem": "pypi",
+    "name": "tpcvverencode",
+    "version": "4.45",
+    "verdict": "MALICIOUS",
+    "score": 65,
+    "flagged": true,
+    "rules": [
+      "OBF-BLOB",
+      "PY-PROCESS",
+      "PY-SETUP-CODE"
+    ],
+    "chains": [
+      "Install-time command execution: runs system commands during installation"
+    ],
+    "ms": 16
+  },
+  {
+    "set": "main",
+    "label": "malicious",
+    "ecosystem": "pypi",
+    "name": "cloudfix",
+    "version": "0.0.0",
+    "verdict": "MALICIOUS",
+    "score": 100,
+    "flagged": true,
+    "rules": [
+      "OBF-BLOB",
+      "PY-DECODE-EXEC",
+      "PY-SETUP-CODE"
+    ],
+    "chains": [
+      "Hidden payload: obfuscated code that is executed"
+    ],
+    "ms": 229
+  },
+  {
+    "set": "main",
+    "label": "malicious",
+    "ecosystem": "pypi",
+    "name": "weedycoder",
+    "version": "1.1.0",
+    "verdict": "MALICIOUS",
+    "score": 100,
+    "flagged": true,
+    "rules": [
+      "OBF-BLOB",
+      "PY-DECODE-EXEC"
+    ],
+    "chains": [
+      "Hidden payload: obfuscated code that is executed"
+    ],
+    "ms": 23
+  },
+  {
+    "set": "main",
+    "label": "malicious",
+    "ecosystem": "npm",
+    "name": "did-0091",
+    "version": "11.0.7",
+    "verdict": "SUSPICIOUS",
+    "score": 40,
+    "flagged": true,
+    "rules": [
+      "NPM-INSTALL-SCRIPT"
+    ],
+    "chains": [],
+    "ms": 5
+  },
+  {
+    "set": "main",
+    "label": "malicious",
+    "ecosystem": "npm",
+    "name": "lowerx-package",
+    "version": "1.0.6",
+    "verdict": "MALICIOUS",
+    "score": 70,
+    "flagged": true,
+    "rules": [
+      "NPM-INSTALL-SCRIPT",
+      "NPM-NETWORK",
+      "NPM-PROCESS"
+    ],
+    "chains": [
+      "Install-time command execution: runs system commands during installation"
+    ],
+    "ms": 11
+  },
+  {
+    "set": "main",
+    "label": "malicious",
+    "ecosystem": "npm",
+    "name": "siren-lament",
+    "version": "2.14.796",
+    "verdict": "SUSPICIOUS",
+    "score": 40,
+    "flagged": true,
+    "rules": [
+      "NPM-INSTALL-SCRIPT"
+    ],
+    "chains": [],
+    "ms": 5
+  },
+  {
+    "set": "main",
+    "label": "malicious",
+    "ecosystem": "npm",
+    "name": "os-apps-ui-curvelibrary",
+    "version": "11.1.9",
+    "verdict": "MALICIOUS",
+    "score": 65,
+    "flagged": true,
+    "rules": [
+      "NPM-INSTALL-SCRIPT",
+      "NPM-PROCESS",
+      "NPM-SECRET-PATH"
+    ],
+    "chains": [
+      "Install-time command execution: runs system commands during installation"
+    ],
+    "ms": 9
+  },
+  {
+    "set": "main",
+    "label": "malicious",
+    "ecosystem": "npm",
+    "name": "nodenetbanxsdk",
+    "version": "25.6.7",
+    "verdict": "MALICIOUS",
+    "score": 70,
+    "flagged": true,
+    "rules": [
+      "NPM-INSTALL-SCRIPT",
+      "NPM-NETWORK",
+      "NPM-RECON"
+    ],
+    "chains": [
+      "Install-time reconnaissance: fingerprints the machine during installation"
+    ],
+    "ms": 9
+  },
+  {
+    "set": "main",
+    "label": "malicious",
+    "ecosystem": "npm",
+    "name": "myatt",
+    "version": "1.0.10",
+    "verdict": "MALICIOUS",
+    "score": 100,
+    "flagged": true,
+    "rules": [
+      "NPM-INSTALL-SCRIPT",
+      "NPM-NETWORK",
+      "NPM-PROCESS",
+      "NPM-RECON",
+      "NPM-SECRET-PATH"
+    ],
+    "chains": [
+      "Install-time data theft: runs on install, reads secrets and sends them out",
+      "Credential exfiltration: reads secrets and has network access",
+      "Install-time command execution: runs system commands during installation",
+      "Install-time reconnaissance: fingerprints the machine during installation"
+    ],
+    "ms": 10
+  },
+  {
+    "set": "main",
+    "label": "malicious",
+    "ecosystem": "npm",
+    "name": "admin10001",
+    "version": "1.0.238",
+    "verdict": "SUSPICIOUS",
+    "score": 40,
+    "flagged": true,
+    "rules": [
+      "NPM-INSTALL-SCRIPT"
+    ],
+    "chains": [],
+    "ms": 48
+  },
+  {
+    "set": "main",
+    "label": "malicious",
+    "ecosystem": "npm",
+    "name": "nabisco",
+    "version": "0.0.1-poc",
+    "verdict": "SUSPICIOUS",
+    "score": 40,
+    "flagged": true,
+    "rules": [
+      "NPM-INSTALL-SCRIPT",
+      "NPM-RECON"
+    ],
+    "chains": [
+      "Install-time reconnaissance: fingerprints the machine during installation"
+    ],
+    "ms": 7
+  },
+  {
+    "set": "main",
+    "label": "malicious",
+    "ecosystem": "npm",
+    "name": "maya-rangi92-breki",
+    "version": "1.2.1",
+    "verdict": "SAFE",
+    "score": 3,
+    "flagged": false,
+    "rules": [],
+    "chains": [],
+    "ms": 1476
+  },
+  {
+    "set": "main",
+    "label": "malicious",
+    "ecosystem": "npm",
+    "name": "ddddddd1d",
+    "version": "1.0.9",
+    "verdict": "SUSPICIOUS",
+    "score": 40,
+    "flagged": true,
+    "rules": [
+      "NPM-INSTALL-SCRIPT"
+    ],
+    "chains": [],
+    "ms": 6
+  },
+  {
+    "set": "main",
+    "label": "benign",
+    "ecosystem": "pypi",
+    "name": "boto3",
+    "version": "1.44.12",
+    "verdict": "SAFE",
+    "score": 0,
+    "flagged": false,
+    "rules": [],
+    "chains": [],
+    "ms": 210
+  },
+  {
+    "set": "main",
+    "label": "benign",
+    "ecosystem": "pypi",
+    "name": "packaging",
+    "version": "26.4",
+    "verdict": "SAFE",
+    "score": 23,
+    "flagged": false,
+    "rules": [
+      "PY-PROCESS"
+    ],
+    "chains": [],
+    "ms": 699
+  },
+  {
+    "set": "main",
+    "label": "benign",
+    "ecosystem": "pypi",
+    "name": "typing-extensions",
+    "version": "4.16.0",
+    "verdict": "SAFE",
+    "score": 12,
+    "flagged": false,
+    "rules": [
+      "PY-DYNAMIC-EXEC"
+    ],
+    "chains": [],
+    "ms": 237
+  },
+  {
+    "set": "main",
+    "label": "benign",
+    "ecosystem": "pypi",
+    "name": "certifi",
+    "version": "2026.11.20",
+    "verdict": "SAFE",
+    "score": 0,
+    "flagged": false,
+    "rules": [],
+    "chains": [],
+    "ms": 37
+  },
+  {
+    "set": "main",
+    "label": "benign",
+    "ecosystem": "pypi",
+    "name": "idna",
+    "version": "3.20",
+    "verdict": "SAFE",
+    "score": 6,
+    "flagged": false,
+    "rules": [],
+    "chains": [],
+    "ms": 782
+  },
+  {
+    "set": "main",
+    "label": "benign",
+    "ecosystem": "pypi",
+    "name": "urllib3",
+    "version": "2.8.0",
+    "verdict": "SAFE",
+    "score": 23,
+    "flagged": false,
+    "rules": [
+      "PY-NETWORK"
+    ],
+    "chains": [],
+    "ms": 685
+  },
+  {
+    "set": "main",
+    "label": "benign",
+    "ecosystem": "pypi",
+    "name": "charset-normalizer",
+    "version": "3.5.3",
+    "verdict": "SAFE",
+    "score": 23,
+    "flagged": false,
+    "rules": [
+      "PY-PROCESS"
+    ],
+    "chains": [],
+    "ms": 269
+  },
+  {
+    "set": "main",
+    "label": "benign",
+    "ecosystem": "pypi",
+    "name": "requests",
+    "version": "2.34.2",
+    "verdict": "SAFE",
+    "score": 22,
+    "flagged": false,
+    "rules": [
+      "PY-DYNAMIC-EXEC"
+    ],
+    "chains": [],
+    "ms": 321
+  },
+  {
+    "set": "main",
+    "label": "benign",
+    "ecosystem": "pypi",
+    "name": "cryptography",
+    "version": "50.0.2",
+    "verdict": "SUSPICIOUS",
+    "score": 29,
+    "flagged": true,
+    "rules": [
+      "PY-DYNAMIC-EXEC",
+      "PY-PROCESS"
+    ],
+    "chains": [],
+    "ms": 1916
+  },
+  {
+    "set": "main",
+    "label": "benign",
+    "ecosystem": "pypi",
+    "name": "cffi",
+    "version": "2.1.1",
+    "verdict": "MALICIOUS",
+    "score": 83,
+    "flagged": true,
+    "rules": [
+      "PY-DYNAMIC-EXEC",
+      "PY-PROCESS",
+      "PY-SETUP-CODE"
+    ],
+    "chains": [
+      "Install-time command execution: runs system commands during installation"
+    ],
+    "ms": 1083
+  },
+  {
+    "set": "main",
+    "label": "benign",
+    "ecosystem": "npm",
+    "name": "semver",
+    "version": "7.8.6",
+    "verdict": "SAFE",
+    "score": 0,
+    "flagged": false,
+    "rules": [],
+    "chains": [],
+    "ms": 155
+  },
+  {
+    "set": "main",
+    "label": "benign",
+    "ecosystem": "npm",
+    "name": "debug",
+    "version": "4.4.3",
+    "verdict": "SAFE",
+    "score": 3,
+    "flagged": false,
+    "rules": [],
+    "chains": [],
+    "ms": 18
+  },
+  {
+    "set": "main",
+    "label": "benign",
+    "ecosystem": "npm",
+    "name": "commander",
+    "version": "15.1.0",
+    "verdict": "SAFE",
+    "score": 10,
+    "flagged": false,
+    "rules": [
+      "NPM-PROCESS"
+    ],
+    "chains": [],
+    "ms": 47
+  },
+  {
+    "set": "main",
+    "label": "benign",
+    "ecosystem": "npm",
+    "name": "tslib",
+    "version": "2.9.1",
+    "verdict": "SAFE",
+    "score": 0,
+    "flagged": false,
+    "rules": [],
+    "chains": [],
+    "ms": 36
+  },
+  {
+    "set": "main",
+    "label": "benign",
+    "ecosystem": "npm",
+    "name": "chalk",
+    "version": "6.0.1",
+    "verdict": "SAFE",
+    "score": 0,
+    "flagged": false,
+    "rules": [],
+    "chains": [],
+    "ms": 35
+  },
+  {
+    "set": "main",
+    "label": "benign",
+    "ecosystem": "npm",
+    "name": "glob",
+    "version": "14.0.6",
+    "verdict": "SAFE",
+    "score": 20,
+    "flagged": false,
+    "rules": [
+      "NPM-NETWORK"
+    ],
+    "chains": [],
+    "ms": 166
+  },
+  {
+    "set": "main",
+    "label": "benign",
+    "ecosystem": "npm",
+    "name": "typescript",
+    "version": "7.0.2",
+    "verdict": "SUSPICIOUS",
+    "score": 30,
+    "flagged": true,
+    "rules": [
+      "NPM-NETWORK",
+      "NPM-PROCESS"
+    ],
+    "chains": [],
+    "ms": 822
+  },
+  {
+    "set": "main",
+    "label": "benign",
+    "ecosystem": "npm",
+    "name": "ws",
+    "version": "8.23.0",
+    "verdict": "SAFE",
+    "score": 20,
+    "flagged": false,
+    "rules": [
+      "NPM-NETWORK"
+    ],
+    "chains": [],
+    "ms": 64
+  },
+  {
+    "set": "main",
+    "label": "benign",
+    "ecosystem": "npm",
+    "name": "uuid",
+    "version": "14.0.3",
+    "verdict": "SAFE",
+    "score": 0,
+    "flagged": false,
+    "rules": [],
+    "chains": [],
+    "ms": 119
+  },
+  {
+    "set": "main",
+    "label": "benign",
+    "ecosystem": "npm",
+    "name": "yargs",
+    "version": "18.2.0",
+    "verdict": "SAFE",
+    "score": 0,
+    "flagged": false,
+    "rules": [],
+    "chains": [],
+    "ms": 111
+  },
+  {
+    "set": "holdout",
+    "label": "benign",
+    "ecosystem": "pypi",
+    "name": "pluggy",
+    "version": "1.7.0",
+    "verdict": "SAFE",
+    "score": 20,
+    "flagged": false,
+    "rules": [
+      "PY-PROCESS"
+    ],
+    "chains": [],
+    "ms": 256
+  },
+  {
+    "set": "holdout",
+    "label": "benign",
+    "ecosystem": "pypi",
+    "name": "pyyaml",
+    "version": "6.0.4",
+    "verdict": "SUSPICIOUS",
+    "score": 45,
+    "flagged": true,
+    "rules": [
+      "PY-DYNAMIC-EXEC",
+      "PY-INSTALL-HOOK"
+    ],
+    "chains": [],
+    "ms": 1011
+  },
+  {
+    "set": "holdout",
+    "label": "benign",
+    "ecosystem": "pypi",
+    "name": "pycparser",
+    "version": "3.12",
+    "verdict": "SAFE",
+    "score": 13,
+    "flagged": false,
+    "rules": [
+      "PY-PROCESS"
+    ],
+    "chains": [],
+    "ms": 526
+  },
+  {
+    "set": "holdout",
+    "label": "benign",
+    "ecosystem": "pypi",
+    "name": "pygments",
+    "version": "2.21.0",
+    "verdict": "MALICIOUS",
+    "score": 100,
+    "flagged": true,
+    "rules": [
+      "PY-DYNAMIC-EXEC",
+      "PY-NETWORK",
+      "PY-PROCESS",
+      "PY-SECRET-PATH"
+    ],
+    "chains": [
+      "Credential exfiltration: reads secrets and has network access"
+    ],
+    "ms": 5807
+  },
+  {
+    "set": "holdout",
+    "label": "benign",
+    "ecosystem": "pypi",
+    "name": "python-dateutil",
+    "version": "4.0.0",
+    "verdict": "SAFE",
+    "score": 9,
+    "flagged": false,
+    "rules": [],
+    "chains": [],
+    "ms": 544
+  },
+  {
+    "set": "holdout",
+    "label": "benign",
+    "ecosystem": "pypi",
+    "name": "six",
+    "version": "1.17.0",
+    "verdict": "SAFE",
+    "score": 13,
+    "flagged": false,
+    "rules": [
+      "PY-DYNAMIC-EXEC"
+    ],
+    "chains": [],
+    "ms": 62
+  },
+  {
+    "set": "holdout",
+    "label": "benign",
+    "ecosystem": "pypi",
+    "name": "setuptools",
+    "version": "84.2.1",
+    "verdict": "MALICIOUS",
+    "score": 91,
+    "flagged": true,
+    "rules": [
+      "PY-DYNAMIC-EXEC",
+      "PY-INSTALL-HOOK",
+      "PY-NETWORK",
+      "PY-PROCESS"
+    ],
+    "chains": [],
+    "ms": 2090
+  },
+  {
+    "set": "holdout",
+    "label": "benign",
+    "ecosystem": "pypi",
+    "name": "pydantic",
+    "version": "2.14.4",
+    "verdict": "SUSPICIOUS",
+    "score": 32,
+    "flagged": true,
+    "rules": [
+      "PY-PROCESS"
+    ],
+    "chains": [],
+    "ms": 2228
+  },
+  {
+    "set": "holdout",
+    "label": "benign",
+    "ecosystem": "pypi",
+    "name": "pydantic-core",
+    "version": "2.50.5",
+    "verdict": "SAFE",
+    "score": 9,
+    "flagged": false,
+    "rules": [],
+    "chains": [],
+    "ms": 1361
+  },
+  {
+    "set": "holdout",
+    "label": "benign",
+    "ecosystem": "pypi",
+    "name": "click",
+    "version": "8.5.1",
+    "verdict": "SUSPICIOUS",
+    "score": 26,
+    "flagged": true,
+    "rules": [
+      "PY-PROCESS"
+    ],
+    "chains": [],
+    "ms": 649
+  },
+  {
+    "set": "holdout",
+    "label": "benign",
+    "ecosystem": "npm",
+    "name": "hasown",
+    "version": "2.0.4",
+    "verdict": "SAFE",
+    "score": 0,
+    "flagged": false,
+    "rules": [],
+    "chains": [],
+    "ms": 17
+  },
+  {
+    "set": "holdout",
+    "label": "benign",
+    "ecosystem": "npm",
+    "name": "fs-extra",
+    "version": "11.4.1",
+    "verdict": "SAFE",
+    "score": 0,
+    "flagged": false,
+    "rules": [],
+    "chains": [],
+    "ms": 75
+  },
+  {
+    "set": "holdout",
+    "label": "benign",
+    "ecosystem": "npm",
+    "name": "get-intrinsic",
+    "version": "1.3.0",
+    "verdict": "SAFE",
+    "score": 0,
+    "flagged": false,
+    "rules": [],
+    "chains": [],
+    "ms": 18
+  },
+  {
+    "set": "holdout",
+    "label": "benign",
+    "ecosystem": "npm",
+    "name": "es-errors",
+    "version": "1.3.0",
+    "verdict": "SAFE",
+    "score": 0,
+    "flagged": false,
+    "rules": [],
+    "chains": [],
+    "ms": 40
+  },
+  {
+    "set": "holdout",
+    "label": "benign",
+    "ecosystem": "npm",
+    "name": "es-object-atoms",
+    "version": "1.1.2",
+    "verdict": "SAFE",
+    "score": 0,
+    "flagged": false,
+    "rules": [],
+    "chains": [],
+    "ms": 23
+  },
+  {
+    "set": "holdout",
+    "label": "benign",
+    "ecosystem": "npm",
+    "name": "fdir",
+    "version": "6.5.0",
+    "verdict": "SAFE",
+    "score": 0,
+    "flagged": false,
+    "rules": [],
+    "chains": [],
+    "ms": 15
+  },
+  {
+    "set": "holdout",
+    "label": "benign",
+    "ecosystem": "npm",
+    "name": "node-fetch",
+    "version": "3.3.2",
+    "verdict": "SAFE",
+    "score": 20,
+    "flagged": false,
+    "rules": [
+      "NPM-NETWORK"
+    ],
+    "chains": [],
+    "ms": 45
+  },
+  {
+    "set": "holdout",
+    "label": "benign",
+    "ecosystem": "npm",
+    "name": "gopd",
+    "version": "1.2.0",
+    "verdict": "SAFE",
+    "score": 0,
+    "flagged": false,
+    "rules": [],
+    "chains": [],
+    "ms": 18
+  },
+  {
+    "set": "holdout",
+    "label": "benign",
+    "ecosystem": "npm",
+    "name": "es-define-property",
+    "version": "1.0.1",
+    "verdict": "SAFE",
+    "score": 0,
+    "flagged": false,
+    "rules": [],
+    "chains": [],
+    "ms": 22
+  },
+  {
+    "set": "holdout",
+    "label": "benign",
+    "ecosystem": "npm",
+    "name": "dotenv",
+    "version": "18.0.10",
+    "verdict": "SAFE",
+    "score": 20,
+    "flagged": false,
+    "rules": [
+      "NPM-PROCESS"
+    ],
+    "chains": [],
+    "ms": 16
+  }
+]

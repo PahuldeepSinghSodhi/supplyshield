@@ -28,7 +28,7 @@ Course: **Cybersecurity for Mobility Systems** · Instructor: **Dr. Rohit Ahuja*
 | **Our approach** | SupplyShield asks *"What does this package's code actually do?"* It statically analyses the code without ever running it. |
 | **What's new** | **Attack-chain scoring** (dangerous *combinations* of signals) and **version-diff analysis** (what an update *added*). |
 | **Plus known bugs** | `--vulns` also does the pip-audit / npm audit job: it looks the exact version up for **known vulnerabilities and confirmed malware**, so one command covers both new and known threats. |
-| **Result** | Caught **10/12** malicious test packages; pip-audit and npm audit caught **0/12**. Matches the specialised tool GuardDog while being **~700× faster** and grading every finding. |
+| **Result** | Synthetic: caught **10/12** test packages; pip-audit and npm audit caught **0/12**. **Real malware:** caught **18/19** real samples, pip-audit/npm audit **0/19**, with fewer false alarms on unseen popular packages than GuardDog (25% vs 35%) and ~100× faster. |
 
 ---
 
@@ -118,13 +118,31 @@ flowchart LR
 
 Reproduce everything: `python eval/run_eval.py`; per-sample output: [eval/results.md](eval/results.md).
 
+### 🌍 On real packages
+
+Real malware from [Datadog's malicious-packages dataset](https://github.com/DataDog/malicious-software-packages-dataset)
+(19 random samples) and 40 of the most-downloaded PyPI and npm packages. Details and safety:
+[eval/real](eval/real/results.md).
+
+| | Real malware detected | False alarms on 20 **unseen** popular packages |
+|---|---|---|
+| **SupplyShield 0.2** | **18 / 19 (95%)**¹ | **5 / 20 (25%)** |
+| SupplyShield 0.1 | 17 / 19 (89%) | 8 / 20 (40%) |
+| GuardDog 2.10 | 13 / 16 (81%) + 3 timeouts | 7 / 20 (35%) |
+| Bandit 1.9 (Python) | 8 / 10 | 9 / 10 |
+| pip-audit / npm audit | **0 / 19** | 0 / 20 |
+
+¹ Measured on the same samples that informed the v0.2 fixes, so not independent; the unseen-package figure is.
+The first, blind real-data run exposed the false alarms (45% of popular packages); every fix is listed in
+[CHANGELOG.md](CHANGELOG.md). Samples are small, so treat these as early evidence, not final accuracy.
+
 ---
 
 ## 🗂️ Repository map
 
 | Folder | Contents | Show this when explaining… |
 |---|---|---|
-| [`supplyshield/`](supplyshield/) | The scanner (~1,000 lines, standard library only) | **the code** |
+| [`supplyshield/`](supplyshield/) | The scanner (~1,100 lines, standard library only) | **the code** |
 | ↳ [`rules_python.py`](supplyshield/rules_python.py) | Python syntax-tree rules | how detection works |
 | ↳ [`rules_npm.py`](supplyshield/rules_npm.py) | npm install-script and JavaScript rules | npm support |
 | ↳ [`scoring.py`](supplyshield/scoring.py) | Attack-chain scoring and verdicts | **novelty #1** |
@@ -133,7 +151,8 @@ Reproduce everything: `python eval/run_eval.py`; per-sample output: [eval/result
 | ↳ [`guard.py`](supplyshield/guard.py) | Pre-install guard for AI agents, shells and CI | integration |
 | [`samples/`](samples/) | 20 inert test packages + labels + generator | the test data |
 | [`eval/`](eval/) | Comparison script and results | **the results** |
-| [`tests/`](tests/) | 39 unit tests (run automatically on GitHub; vulnerability tests use a fake database, so no internet) | code quality |
+| [`eval/real/`](eval/real/) | Real-data evaluation: scripts, package list, results (no package files) | **real-world results** |
+| [`tests/`](tests/) | 49 unit tests (run automatically on GitHub; vulnerability tests use a fake database, so no internet) | code quality |
 | [`paper/`](paper/) | Article [PDF](paper/SupplyShield.pdf), Overleaf source and ready-to-upload zip | **the article** |
 | [`presentation/`](presentation/) | Talk script, likely questions, demo script | the presentation |
 | [`docs/`](docs/) | Plain-language explanation of the method | answering questions |

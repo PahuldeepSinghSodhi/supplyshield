@@ -38,6 +38,13 @@ SupplyShield asks: *"What does this package's code actually do?"*
   evasive samples and missed the typosquats. It can't tell a harmless install script from `curl | sh`, has no
   version diff, and took **4.2 s per package vs 6 ms**.
 
+## 6b. Real data (1 min)
+- 19 real malware samples from Datadog's dataset + 40 of the most-downloaded PyPI/npm packages.
+- Blind first run: SupplyShield caught **17/19** real malware; pip-audit and npm audit **0/19**.
+- It also exposed the weakness the synthetic test hid: **45% false alarms** on popular packages (even `requests`).
+- I traced every false alarm to its cause and fixed the rules (v0.2). On **20 unseen** popular packages:
+  false alarms **40% → 25%** (GuardDog: 35%), malware caught **18/19**.
+
 ## 7. Honest limits and close (30 s)
 - Small self-made corpus, so this shows feasibility, not real-world accuracy.
 - Missed code that assembles names at run time; needs dynamic analysis.
@@ -47,6 +54,11 @@ SupplyShield asks: *"What does this package's code actually do?"*
 ---
 
 ## Likely questions
+
+**Q: Didn't you just tune the tool to your test data?**
+I kept two sets apart. I changed the rules using the first 40 real packages, then measured false alarms on 20
+*unseen* packages I never looked at while tuning: 40% → 25%. The malware figure (18/19) uses the same samples that
+informed the fixes, and I say so. One malware sample was actually lost by the changes, which I also report.
 
 **Q: Isn't this what GuardDog or Socket.dev already do?**
 They also analyse behaviour, and I tested GuardDog directly. It detects as many samples as mine, so I don't

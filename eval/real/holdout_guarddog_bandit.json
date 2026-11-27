@@ -1,0 +1,162 @@
+[
+  {
+    "name": "pluggy",
+    "ecosystem": "pypi",
+    "GuardDog": false,
+    "GuardDog detail": "0 issues",
+    "Bandit": false,
+    "Bandit detail": "427 issues (0 medium/high)"
+  },
+  {
+    "name": "pyyaml",
+    "ecosystem": "pypi",
+    "GuardDog": false,
+    "GuardDog detail": "0 issues",
+    "Bandit": true,
+    "Bandit detail": "104 issues (19 medium/high)"
+  },
+  {
+    "name": "pycparser",
+    "ecosystem": "pypi",
+    "GuardDog": true,
+    "GuardDog detail": "1 issues (code-execution)",
+    "Bandit": true,
+    "Bandit detail": "31 issues (1 medium/high)"
+  },
+  {
+    "name": "pygments",
+    "ecosystem": "pypi",
+    "GuardDog": true,
+    "GuardDog detail": "5 issues (shady-links, unicode, suspicious_passwd_access_lin)",
+    "Bandit": true,
+    "Bandit detail": "576 issues (12 medium/high)"
+  },
+  {
+    "name": "python-dateutil",
+    "ecosystem": "pypi",
+    "GuardDog": true,
+    "GuardDog detail": "1 issues (api-obfuscation)",
+    "Bandit": true,
+    "Bandit detail": "476 issues (10 medium/high)"
+  },
+  {
+    "name": "six",
+    "ecosystem": "pypi",
+    "GuardDog": true,
+    "GuardDog detail": "6 issues (api-obfuscation)",
+    "Bandit": true,
+    "Bandit detail": "204 issues (1 medium/high)"
+  },
+  {
+    "name": "setuptools",
+    "ecosystem": "pypi",
+    "GuardDog": true,
+    "GuardDog detail": "6 issues (code-execution, dll-hijacking, api-obfuscation)",
+    "Bandit": true,
+    "Bandit detail": "1563 issues (30 medium/high)"
+  },
+  {
+    "name": "pydantic",
+    "ecosystem": "pypi",
+    "GuardDog": true,
+    "GuardDog detail": "2 issues (api-obfuscation)",
+    "Bandit": true,
+    "Bandit detail": "6466 issues (41 medium/high)"
+  },
+  {
+    "name": "pydantic-core",
+    "ecosystem": "pypi",
+    "GuardDog": false,
+    "GuardDog detail": "0 issues",
+    "Bandit": true,
+    "Bandit detail": "4678 issues (13 medium/high)"
+  },
+  {
+    "name": "click",
+    "ecosystem": "pypi",
+    "GuardDog": false,
+    "GuardDog detail": "0 issues",
+    "Bandit": true,
+    "Bandit detail": "1454 issues (5 medium/high)"
+  },
+  {
+    "name": "hasown",
+    "ecosystem": "npm",
+    "GuardDog": false,
+    "GuardDog detail": "0 issues",
+    "Bandit": null,
+    "Bandit detail": "n/a (Python only)"
+  },
+  {
+    "name": "fs-extra",
+    "ecosystem": "npm",
+    "GuardDog": false,
+    "GuardDog detail": "0 issues",
+    "Bandit": null,
+    "Bandit detail": "n/a (Python only)"
+  },
+  {
+    "name": "get-intrinsic",
+    "ecosystem": "npm",
+    "GuardDog": false,
+    "GuardDog detail": "0 issues",
+    "Bandit": null,
+    "Bandit detail": "n/a (Python only)"
+  },
+  {
+    "name": "es-errors",
+    "ecosystem": "npm",
+    "GuardDog": false,
+    "GuardDog detail": "0 issues",
+    "Bandit": null,
+    "Bandit detail": "n/a (Python only)"
+  },
+  {
+    "name": "es-object-atoms",
+    "ecosystem": "npm",
+    "GuardDog": false,
+    "GuardDog detail": "0 issues",
+    "Bandit": null,
+    "Bandit detail": "n/a (Python only)"
+  },
+  {
+    "name": "fdir",
+    "ecosystem": "npm",
+    "GuardDog": false,
+    "GuardDog detail": "0 issues",
+    "Bandit": null,
+    "Bandit detail": "n/a (Python only)"
+  },
+  {
+    "name": "node-fetch",
+    "ecosystem": "npm",
+    "GuardDog": true,
+    "GuardDog detail": "2 issues (npm-api-obfuscation)",
+    "Bandit": null,
+    "Bandit detail": "n/a (Python only)"
+  },
+  {
+    "name": "gopd",
+    "ecosystem": "npm",
+    "GuardDog": false,
+    "GuardDog detail": "0 issues",
+    "Bandit": null,
+    "Bandit detail": "n/a (Python only)"
+  },
+  {
+    "name": "es-define-property",
+    "ecosystem": "npm",
+    "GuardDog": false,
+    "GuardDog detail": "0 issues",
+    "Bandit": null,
+    "Bandit detail": "n/a (Python only)"
+  },
+  {
+    "name": "dotenv",
+    "ecosystem": "npm",
+    "GuardDog": false,
+    "GuardDog detail": "0 issues",
+    "Bandit": null,
+    "Bandit detail": "n/a (Python only)"
+  }
+]

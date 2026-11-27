@@ -23,8 +23,16 @@ It reads the package's files and analyses them **without installing, importing o
 4. **Shared checks** ([common.py](../supplyshield/common.py)). These cover random-looking encoded strings
    (hidden payloads), paths to secrets (`~/.ssh`, `.aws/credentials`, `.npmrc`, browser password stores) and
    typosquatting.
-5. **Scoring** ([scoring.py](../supplyshield/scoring.py)) turns findings into a score and a verdict.
-6. **Report** ([report.py](../supplyshield/report.py)). Every finding shows the file, line, code, **why**
+5. **Context** (added in v0.2 after testing on real packages). The same code means different things in
+   different places:
+   - **Install-time code** (`setup.py`, npm install scripts) keeps full severity. `exec`/`eval` is high only here.
+   - **Library code** is scored normally, but `exec`/`eval` is medium, because metaprogramming libraries use it.
+   - **Test, docs and example files** (`tests/`, `docs/`, `examples/`, `test_*.py`, …) ship in source
+     archives but are never installed or run, so their findings are downgraded to low.
+   - **Copying the environment** (to start a subprocess) is low. **Turning the whole environment into
+     text** (`str(os.environ)`, `JSON.stringify(process.env)`) is high, since that is what theft needs.
+6. **Scoring** ([scoring.py](../supplyshield/scoring.py)) turns findings into a score and a verdict.
+7. **Report** ([report.py](../supplyshield/report.py)). Every finding shows the file, line, code, **why**
    it is dangerous, and a **fix**.
 
 ## 3. Attack-chain scoring: "dangerous combinations of signals"
@@ -52,6 +60,7 @@ What gives malware away is **several signals together**. To steal passwords, a p
 | secrets + network | Credential exfiltration | +25 |
 | system commands during installation | Install-time command execution | +20 |
 | hidden/encoded code + execution | Hidden payload | +20 |
+| host fingerprinting (host name, user name) during installation | Install-time reconnaissance | +20 |
 
 **Verdict:** 0–24 **SAFE** · 25–59 **SUSPICIOUS** · 60–100 **MALICIOUS** (score capped at 100).
 
@@ -107,6 +116,9 @@ fix versions.
 
 - Code assembled at run time (`getattr(os, "sys" + "tem")`) is invisible to static analysis. GuardDog caught
   our two evasive samples; adding rules for such dynamic lookups is the next step.
-- The test corpus is small and self-built, so results show feasibility, not real-world accuracy.
+- The synthetic corpus is small and self-built. On real packages ([eval/real](../eval/real/results.md)) v0.2
+  still raises false alarms on about a quarter of popular packages, mostly those that legitimately run
+  commands or compile code during installation (`setuptools`, `cffi`), and through substring matching of
+  secret file names (`pygments` mentions `id_rsa` as a file type).
 - `--vulns` only knows what has already been reported to advisory databases; that's exactly why the behaviour
   analysis exists.

@@ -8,7 +8,7 @@ import ast
 import re
 from pathlib import Path
 
-from .common import blob_findings, sensitive_path_hits
+from .common import blob_findings, downgrade_non_shipped, sensitive_path_hits, unreadable_finding
 from .models import Finding
 
 MAX_FILE_BYTES = 2_000_000
@@ -24,10 +24,23 @@ PROCESS_FUNCS = {
     "subprocess.run", "subprocess.call", "subprocess.check_call", "subprocess.check_output",
     "subprocess.Popen", "subprocess.getoutput", "pty.spawn",
 }
-NETWORK_PREFIXES = (
-    "urllib.request.", "requests.", "httpx.", "http.client.", "socket.", "ftplib.",
-    "smtplib.", "aiohttp.", "urllib3.",
-)
+# Only calls that actually open a connection or send data. (v0.1 matched ANY name under these
+# modules, so helpers such as requests' parse_url() or socket.inet_aton() counted as network access.)
+NETWORK_FUNCS = {
+    "urllib.request.urlopen", "urllib.request.urlretrieve", "urllib.request.build_opener",
+    "requests.get", "requests.post", "requests.put", "requests.patch", "requests.delete", "requests.head",
+    "requests.request", "requests.Session", "requests.session",
+    "httpx.get", "httpx.post", "httpx.put", "httpx.patch", "httpx.delete", "httpx.request", "httpx.stream",
+    "httpx.Client", "httpx.AsyncClient", "http.client.HTTPConnection", "http.client.HTTPSConnection",
+    "socket.socket", "socket.create_connection", "urllib3.PoolManager", "urllib3.request",
+    "aiohttp.ClientSession", "aiohttp.request", "ftplib.FTP", "ftplib.FTP_TLS",
+    "smtplib.SMTP", "smtplib.SMTP_SSL", "telnetlib.Telnet",
+}
+# Functions that turn the WHOLE environment into data that can be sent somewhere.
+SERIALISERS = {"json.dumps", "str", "repr", "base64.b64encode", "pickle.dumps", "marshal.dumps"}
+# Host fingerprinting: who and where the victim is (typical first step of install-time malware).
+RECON_FUNCS = {"socket.gethostname", "platform.node", "getpass.getuser", "os.getlogin", "os.uname",
+               "platform.uname"}
 DOWNLOAD_AND_RUN = re.compile(r"(curl|wget|Invoke-WebRequest|iwr)\b.*\|\s*(ba)?sh|(curl|wget)\b.*&&\s*(ba)?sh|powershell.*(iex|Invoke-Expression)", re.I)
 INSTALL_BASES = {"install", "develop", "egg_info", "build_py", "sdist", "bdist_egg", "build_ext"}
 
@@ -56,6 +69,28 @@ class _Visitor(ast.NodeVisitor):
             rule, cat, sev, self.rel, getattr(node, "lineno", 0), evidence[:100], expl, fix,
             install_time=self.install_time,
         ))
+
+    def _is_environ(self, node: ast.AST) -> bool:
+        """os.environ itself, or a plain copy of it (dict(os.environ), os.environ.copy())."""
+        if self._name(node) == "os.environ":
+            return True
+        return isinstance(node, ast.Call) and (
+            self._name(node.func) in {"os.environ.copy", "os.environ.items"}
+            or (self._name(node.func) == "dict" and any(self._name(a) == "os.environ" for a in node.args)))
+
+    def _env_dump(self, node, src):
+        self._add(
+            "PY-ENV-DUMP", "secrets", "high", node, src,
+            "The package turns ALL environment variables into text or data that can be sent somewhere. "
+            "Environment variables usually hold API keys, cloud tokens and passwords.",
+            "Libraries should read only the specific variables they need. Treat as credential theft.",
+        )
+
+    def visit_JoinedStr(self, node: ast.JoinedStr):
+        # f"...{os.environ}..." also serialises the whole environment
+        if any(isinstance(v, ast.FormattedValue) and self._is_environ(v.value) for v in node.values):
+            self._env_dump(node, ast.unparse(node))
+        self.generic_visit(node)
 
     def _contains_decode(self, node: ast.AST) -> bool:
         for sub in ast.walk(node):
@@ -103,8 +138,10 @@ class _Visitor(ast.NodeVisitor):
                     "Do not install. Decode the payload in a sandbox to see what it does.",
                 )
             elif not literal_only:
+                # High at install time; medium in library code, where metaprogramming libraries
+                # (typing-extensions, cffi) use exec/eval legitimately.
                 self._add(
-                    "PY-DYNAMIC-EXEC", "exec", "high", node, src,
+                    "PY-DYNAMIC-EXEC", "exec", "high" if self.install_time else "medium", node, src,
                     "Code is built at run time and executed with exec/eval, so what actually runs cannot be "
                     "seen by reading the source.",
                     "Check where the executed string comes from.",
@@ -129,7 +166,7 @@ class _Visitor(ast.NodeVisitor):
                 "Check which command is run and why a library needs it.",
             )
 
-        elif name.startswith(NETWORK_PREFIXES):
+        elif name in NETWORK_FUNCS:
             self._add(
                 "PY-NETWORK", "network", "medium", node, src,
                 "The package opens a network connection. Combined with secret access or install-time "
@@ -137,15 +174,25 @@ class _Visitor(ast.NodeVisitor):
                 "Check the destination address and what data is sent.",
             )
 
-        # Bulk copies of all environment variables (API keys, tokens live here).
-        if name in {"dict", "json.dumps", "str", "repr", "list"} and any(
-            self._name(a) == "os.environ" for a in node.args
-        ) or name == "os.environ.copy" or name == "os.environ.items":
+        elif name in RECON_FUNCS:
             self._add(
-                "PY-ENV-DUMP", "secrets", "high", node, src,
-                "The package copies ALL environment variables, which usually hold API keys, cloud tokens "
-                "and passwords.",
-                "Libraries should read only the specific variables they need. Treat as credential theft.",
+                "PY-RECON", "recon", "medium", node, src,
+                "The package collects identifying details about the machine or user (host name, user name). "
+                "Install-time malware does this first to fingerprint its victims.",
+                "Check why a library needs to know who and where it is running.",
+            )
+
+        # The whole environment turned into data: high. A plain copy (usually passed to a subprocess): low.
+        if (name in SERIALISERS and any(self._is_environ(a) for a in node.args)) or \
+                name in {"os.environ.__str__", "os.environ.__repr__"}:
+            self._env_dump(node, src)
+        elif name in {"os.environ.copy", "os.environ.items"} or (
+                name in {"dict", "list"} and any(self._name(a) == "os.environ" for a in node.args)):
+            self._add(
+                "PY-ENV-COPY", "secrets", "low", node, src,
+                "The package copies all environment variables. This is common (for example, to pass them to a "
+                "subprocess) and only dangerous if the copy is then sent somewhere.",
+                "Check where the copy goes.",
             )
 
         if name == "setup" and self.install_time:
@@ -178,7 +225,11 @@ def scan_python(root: Path) -> list[Finding]:
         if path.stat().st_size > MAX_FILE_BYTES:
             continue
         rel = path.relative_to(root).as_posix()
-        text = path.read_text(encoding="utf-8-sig", errors="replace")
+        try:
+            text = path.read_text(encoding="utf-8-sig", errors="replace")
+        except OSError as e:  # e.g. blocked by antivirus: report it, never crash
+            findings.append(unreadable_finding(rel, e))
+            continue
         install_time = rel == "setup.py"
         try:
             tree = ast.parse(text, filename=rel)
@@ -190,12 +241,12 @@ def scan_python(root: Path) -> list[Finding]:
             continue
         v = _Visitor(rel, install_time)
         v.visit(tree)
-        findings += v.findings
-        for f in blob_findings(text, rel):
+        file_findings = v.findings + blob_findings(text, rel)
+        for f in file_findings:
             f.install_time = install_time
-            findings.append(f)
-        if install_time and any(f.category in {"process", "network", "secrets", "exec", "obfuscation"}
-                                for f in v.findings):
+        findings += downgrade_non_shipped(file_findings)
+        if install_time and any(f.category in {"process", "network", "secrets", "exec", "obfuscation", "recon"}
+                                and f.severity != "low" for f in v.findings):
             findings.append(Finding(
                 "PY-SETUP-CODE", "install", "high", rel, 0, "risky calls inside setup.py",
                 "setup.py itself performs risky actions. setup.py runs automatically when a source "

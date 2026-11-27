@@ -6,3 +6,15 @@ venv/
 .pytest_cache/
 build/
 dist/
+
+# Real-data evaluation: downloaded packages (incl. real MALWARE) and local paths never go in the repo
+eval/real/malicious/
+eval/real/benign/
+eval/real/holdout/
+eval/real/dd/
+eval/real/tree.txt
+eval/real/selection.json
+eval/real/holdout.json
+eval/real/rows_cache.json
+eval/real/results.json
+eval/real/fp_analysis.txt
