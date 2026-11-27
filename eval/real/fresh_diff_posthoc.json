@@ -1,0 +1,318 @@
+[
+  {
+    "kind": "poisoned_update",
+    "name": "posthog-react-native",
+    "verdict": "SUSPICIOUS",
+    "score": 56,
+    "rules": [
+      "NEW-INSTALL-CODE",
+      "NPM-INSTALL-SCRIPT"
+    ]
+  },
+  {
+    "kind": "poisoned_update",
+    "name": "awaitly-mongo",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": []
+  },
+  {
+    "kind": "poisoned_update",
+    "name": "eslint-config-prettier",
+    "verdict": "SUSPICIOUS",
+    "score": 56,
+    "rules": [
+      "NEW-INSTALL-CODE",
+      "NPM-INSTALL-SCRIPT"
+    ]
+  },
+  {
+    "kind": "poisoned_update",
+    "name": "cline",
+    "verdict": "SUSPICIOUS",
+    "score": 56,
+    "rules": [
+      "NEW-INSTALL-CODE",
+      "NPM-INSTALL-SCRIPT"
+    ]
+  },
+  {
+    "kind": "poisoned_update",
+    "name": "designstudiouiux",
+    "verdict": "SUSPICIOUS",
+    "score": 56,
+    "rules": [
+      "NEW-INSTALL-CODE",
+      "NPM-INSTALL-SCRIPT"
+    ]
+  },
+  {
+    "kind": "poisoned_update",
+    "name": "ngx-bootstrap",
+    "verdict": "SUSPICIOUS",
+    "score": 56,
+    "rules": [
+      "NEW-INSTALL-CODE",
+      "NPM-INSTALL-SCRIPT"
+    ]
+  },
+  {
+    "kind": "poisoned_update",
+    "name": "napi-postinstall",
+    "verdict": "SUSPICIOUS",
+    "score": 56,
+    "rules": [
+      "NEW-INSTALL-CODE",
+      "NPM-INSTALL-SCRIPT"
+    ]
+  },
+  {
+    "kind": "poisoned_update",
+    "name": "zapier-async-storage",
+    "verdict": "SUSPICIOUS",
+    "score": 56,
+    "rules": [
+      "NEW-INSTALL-CODE",
+      "NPM-INSTALL-SCRIPT"
+    ]
+  },
+  {
+    "kind": "poisoned_update",
+    "name": "ember-velcro",
+    "verdict": "SUSPICIOUS",
+    "score": 56,
+    "rules": [
+      "NEW-INSTALL-CODE",
+      "NPM-INSTALL-SCRIPT"
+    ]
+  },
+  {
+    "kind": "poisoned_update",
+    "name": "eslint-plugin-executable-stories-playwright",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": []
+  },
+  {
+    "kind": "poisoned_update",
+    "name": "axios",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": []
+  },
+  {
+    "kind": "poisoned_update",
+    "name": "effect-analyzer",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": []
+  },
+  {
+    "kind": "poisoned_update",
+    "name": "create-glee-app",
+    "verdict": "SUSPICIOUS",
+    "score": 56,
+    "rules": [
+      "NEW-INSTALL-CODE",
+      "NPM-INSTALL-SCRIPT"
+    ]
+  },
+  {
+    "kind": "poisoned_update",
+    "name": "tg-client-query-builder",
+    "verdict": "SUSPICIOUS",
+    "score": 56,
+    "rules": [
+      "NEW-INSTALL-CODE",
+      "NPM-INSTALL-SCRIPT"
+    ]
+  },
+  {
+    "kind": "poisoned_update",
+    "name": "eslint-config-prettier",
+    "verdict": "SUSPICIOUS",
+    "score": 56,
+    "rules": [
+      "NEW-INSTALL-CODE",
+      "NPM-INSTALL-SCRIPT"
+    ]
+  },
+  {
+    "kind": "poisoned_update",
+    "name": "num2words",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": []
+  },
+  {
+    "kind": "poisoned_update",
+    "name": "num2words",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": []
+  },
+  {
+    "kind": "poisoned_update",
+    "name": "ppkt2synergy",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": []
+  },
+  {
+    "kind": "poisoned_update",
+    "name": "ultralytics",
+    "excluded": "FileNotFoundError"
+  },
+  {
+    "kind": "poisoned_update",
+    "name": "elementary-data",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": [
+      "PY-NETWORK",
+      "PY-PROCESS"
+    ]
+  },
+  {
+    "kind": "benign",
+    "name": "numpy",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": []
+  },
+  {
+    "kind": "benign",
+    "name": "botocore",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": []
+  },
+  {
+    "kind": "benign",
+    "name": "anyio",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": []
+  },
+  {
+    "kind": "benign",
+    "name": "annotated-types",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": []
+  },
+  {
+    "kind": "benign",
+    "name": "pytest",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": [
+      "PY-PROCESS"
+    ]
+  },
+  {
+    "kind": "benign",
+    "name": "iniconfig",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": []
+  },
+  {
+    "kind": "benign",
+    "name": "typing-inspection",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": []
+  },
+  {
+    "kind": "benign",
+    "name": "h11",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": []
+  },
+  {
+    "kind": "benign",
+    "name": "attrs",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": []
+  },
+  {
+    "kind": "benign",
+    "name": "markupsafe",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": []
+  },
+  {
+    "kind": "benign",
+    "name": "react",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": []
+  },
+  {
+    "kind": "benign",
+    "name": "react-dom",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": []
+  },
+  {
+    "kind": "benign",
+    "name": "jsesc",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": []
+  },
+  {
+    "kind": "benign",
+    "name": "call-bound",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": []
+  },
+  {
+    "kind": "benign",
+    "name": "minimist",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": []
+  },
+  {
+    "kind": "benign",
+    "name": "has-tostringtag",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": []
+  },
+  {
+    "kind": "benign",
+    "name": "espree",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": []
+  },
+  {
+    "kind": "benign",
+    "name": "human-signals",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": []
+  },
+  {
+    "kind": "benign",
+    "name": "rimraf",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": []
+  },
+  {
+    "kind": "benign",
+    "name": "body-parser",
+    "verdict": "SAFE",
+    "score": 0,
+    "rules": []
+  }
+]

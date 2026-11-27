@@ -18,3 +18,6 @@ eval/real/holdout.json
 eval/real/rows_cache.json
 eval/real/results.json
 eval/real/fp_analysis.txt
+eval/real/fresh/
+eval/real/fresh.json
+eval/real/*.log

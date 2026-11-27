@@ -45,6 +45,13 @@ SupplyShield asks: *"What does this package's code actually do?"*
 - I traced every false alarm to its cause and fixed the rules (v0.2). On **20 unseen** popular packages:
   false alarms **40% → 25%** (GuardDog: 35%), malware caught **18/19**.
 
+## 6c. Learned scoring and never-seen attacks (1 min)
+- v0.3 **learned** how much each signal counts from 79 labelled packages (logistic regression, cross-validated).
+- It learned: typosquat names and hidden code are strong signs; `exec` is *more* common in honest code.
+- Final test on data never used: 20 real **hijacked releases** (`axios`, `eslint-config-prettier`, …).
+  SupplyShield **11/20**, GuardDog **5/20**, pip-audit/npm audit **0**.
+- Version diff caught **11/20** real poisoned updates with **0** false alarms on normal updates.
+
 ## 7. Honest limits and close (30 s)
 - Small self-made corpus, so this shows feasibility, not real-world accuracy.
 - Missed code that assembles names at run time; needs dynamic analysis.
@@ -54,6 +61,13 @@ SupplyShield asks: *"What does this package's code actually do?"*
 ---
 
 ## Likely questions
+
+**Q: How did it "learn" the scoring?**
+Logistic regression on 79 labelled packages, checked with leave-one-out cross-validation; thresholds chosen on
+predictions the model hadn't trained on. Then tested once on 40 fresh real packages it never saw.
+
+**Q: Why does it still miss 45% of hijacks?**
+Many hide the malware in a binary or a new dependency (`axios` 1.14.1). Scanning dependencies is the next step.
 
 **Q: Didn't you just tune the tool to your test data?**
 I kept two sets apart. I changed the rules using the first 40 real packages, then measured false alarms on 20

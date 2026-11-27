@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.3.0 — learned scoring, tested on never-seen real attacks
+
+| Change | Why |
+|---|---|
+| **Scoring learned from data** (logistic regression on 79 labelled packages; leave-one-out cross-validation; thresholds chosen on out-of-fold predictions) replaces hand-set points. Scores keep the familiar 0–100 scale with 25/60 cut-offs. | Hand-set weights were judgement. Cross-validated false alarms at 90% detection: 21% → 10% |
+| **Decisive-evidence floor:** any critical finding (download-and-run, decode-and-execute) is at least MALICIOUS | Too rare in training data for the model to weigh |
+| **Secret-file matching by whole path parts**, not substrings; bare names like `id_rsa` count only next to a real credential path | `pygments` was flagged for naming `id_rsa` as a file type |
+| **`NEW-INSTALL-CODE`** in `diff`: an update that *adds* install-time code | How most real hijacked releases work |
+| **Speed fix** for megabyte-long minified lines | First v0.3 pattern hung over an hour on `react-dom` |
+
+**Fresh test** (never used for rules or scoring; [eval/real/results.md](eval/real/results.md), section 4):
+20 real hijacked releases + 20 new popular packages, each with its previous release.
+
+| | v0.2 | **v0.3** | GuardDog 2.10 |
+|---|---|---|---|
+| Hijacked releases caught | 6/20 | **11/20** | 5/20 |
+| Poisoned updates caught by `diff` | 2/20 | **11/20** | – |
+| False alarms, new popular packages | 6/20 | **5/20** | 3/19 |
+| False alarms, clean releases before attack | 5/20 | **2/20** | – |
+| False alarms, `diff` on normal updates | 0/20 | **0/20** | – |
+
+Lost by v0.3: 3 hijacked releases whose only signals the model learned to discount.
+
 ## 0.2.0 — lessons from real data
 
 Testing on real packages (20 real malware samples from Datadog's dataset, 20 popular benign packages, and

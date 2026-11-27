@@ -26,9 +26,28 @@ Course: **Cybersecurity for Mobility Systems** · Instructor: **Dr. Rohit Ahuja*
 | **Problem** | Attackers poison the open-source packages every app is built from ([event-stream](https://blog.npmjs.org/post/180565383195/details-about-the-event-stream-incident) 2018, [ua-parser-js](https://www.cisa.gov/news-events/alerts/2021/10/22/malware-discovered-popular-npm-package-ua-parser-js) 2021, [XZ Utils CVE-2024-3094](https://nvd.nist.gov/vuln/detail/CVE-2024-3094) 2024). |
 | **Gap in existing tools** | `pip-audit`, `npm audit` and Dependabot only ask *"Is this version on a list of known vulnerabilities?"* A brand-new malicious package is on no list, so they report it as clean. |
 | **Our approach** | SupplyShield asks *"What does this package's code actually do?"* It statically analyses the code without ever running it. |
-| **What's new** | **Attack-chain scoring** (dangerous *combinations* of signals) and **version-diff analysis** (what an update *added*). |
+| **What's new** | **Attack-chain scoring** (dangerous *combinations* of signals), **learned from real data**, and **version-diff analysis** (what an update *added*). |
 | **Plus known bugs** | `--vulns` also does the pip-audit / npm audit job: it looks the exact version up for **known vulnerabilities and confirmed malware**, so one command covers both new and known threats. |
-| **Result** | Synthetic: caught **10/12** test packages; pip-audit and npm audit caught **0/12**. **Real malware:** caught **18/19** real samples, pip-audit/npm audit **0/19**, with fewer false alarms on unseen popular packages than GuardDog (25% vs 35%) and ~100× faster. |
+
+### 🏆 Headline result: real attacks SupplyShield had never seen
+
+| | **SupplyShield 0.3** | GuardDog 2.10 | pip-audit / npm audit |
+|---|---|---|---|
+| Real **hijacked releases** caught (20) | **11 (55%)** | 5 (25%) | 0 |
+| Real poisoned **updates** caught by the version diff (20) | **11 (55%)** | no such feature | no such feature |
+| False alarms on normal updates (20) | **0** | – | – |
+| False alarms on popular packages (20) | 5 (25%) | 3 of 19 (16%) | 0 |
+| Time per package | **~0.2 s** | ~20 s | ~1 s |
+
+### 📈 How it got there: three rounds of learning
+
+1. **v0.1:** built and tested on 20 synthetic packages. Caught 10/12; pip-audit and npm audit 0/12.
+2. **v0.2:** first **real** data (19 real malware samples, 40 popular packages) caught 17/19 but exposed
+   **45% false alarms** → rules fixed (now 25% on unseen packages).
+3. **v0.3:** scoring **learned** from data, then tested on **never-seen** real attacks: detection 30% → 55%,
+   version diff 10% → 55%. Details: [eval/real/results.md](eval/real/results.md), [CHANGELOG.md](CHANGELOG.md).
+
+Small samples (20 per group): treat these as early real-world evidence, not final accuracy.
 
 ---
 
@@ -111,14 +130,14 @@ flowchart LR
 **Key findings**
 - 🔴 **pip-audit and npm audit saw nothing.** They said "no known vulnerabilities" even for a package that steals your npm token. They are built for *known* bugs, not new malware.
 - 🟠 **Bandit** rated `curl … | sh` inside an install hook as **low** severity. It has no idea the code runs at install time.
-- 🟢 **GuardDog** ties on detection with different mistakes. It caught our evasive samples, but missed the typosquats, gives no severity (a harmless `node-gyp` script and a `curl | sh` script look identical), has no version diff, and is ~700× slower.
+- 🟢 **GuardDog** ties on detection with different mistakes. It caught our evasive samples, but missed the typosquats, gives no severity (a harmless `node-gyp` script and a `curl | sh` script look identical), has no version diff, and is ~700× slower on these small samples (~100× on real packages).
 - 🔁 **Version diff** isolated exactly what both poisoned updates added. No other tool produces this report.
 
 **Honest limits:** the corpus is small and self-built (feasibility, not real-world accuracy); SupplyShield missed 2 deliberately evasive samples. The table above measures **behaviour analysis only**; the optional `--vulns` lookup (added after this evaluation) covers known vulnerable versions. Checked against pip-audit on `requests` 2.19.1, both report the same 5 vulnerabilities with the same fix versions.
 
 Reproduce everything: `python eval/run_eval.py`; per-sample output: [eval/results.md](eval/results.md).
 
-### 🌍 On real packages
+### 🌍 Round 2 (v0.2): first real packages
 
 Real malware from [Datadog's malicious-packages dataset](https://github.com/DataDog/malicious-software-packages-dataset)
 (19 random samples) and 40 of the most-downloaded PyPI and npm packages. Details and safety:
@@ -142,7 +161,7 @@ The first, blind real-data run exposed the false alarms (45% of popular packages
 
 | Folder | Contents | Show this when explaining… |
 |---|---|---|
-| [`supplyshield/`](supplyshield/) | The scanner (~1,100 lines, standard library only) | **the code** |
+| [`supplyshield/`](supplyshield/) | The scanner (~1,200 lines, standard library only) | **the code** |
 | ↳ [`rules_python.py`](supplyshield/rules_python.py) | Python syntax-tree rules | how detection works |
 | ↳ [`rules_npm.py`](supplyshield/rules_npm.py) | npm install-script and JavaScript rules | npm support |
 | ↳ [`scoring.py`](supplyshield/scoring.py) | Attack-chain scoring and verdicts | **novelty #1** |
@@ -152,7 +171,7 @@ The first, blind real-data run exposed the false alarms (45% of popular packages
 | [`samples/`](samples/) | 20 inert test packages + labels + generator | the test data |
 | [`eval/`](eval/) | Comparison script and results | **the results** |
 | [`eval/real/`](eval/real/) | Real-data evaluation: scripts, package list, results (no package files) | **real-world results** |
-| [`tests/`](tests/) | 49 unit tests (run automatically on GitHub; vulnerability tests use a fake database, so no internet) | code quality |
+| [`tests/`](tests/) | 55 unit tests (run automatically on GitHub; vulnerability tests use a fake database, so no internet) | code quality |
 | [`paper/`](paper/) | Article [PDF](paper/SupplyShield.pdf), Overleaf source and ready-to-upload zip | **the article** |
 | [`presentation/`](presentation/) | Talk script, likely questions, demo script | the presentation |
 | [`docs/`](docs/) | Plain-language explanation of the method | answering questions |

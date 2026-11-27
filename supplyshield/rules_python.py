@@ -8,7 +8,7 @@ import ast
 import re
 from pathlib import Path
 
-from .common import blob_findings, downgrade_non_shipped, sensitive_path_hits, unreadable_finding
+from .common import blob_findings, classify_secret_string, downgrade_non_shipped, unreadable_finding
 from .models import Finding
 
 MAX_FILE_BYTES = 2_000_000
@@ -51,6 +51,7 @@ class _Visitor(ast.NodeVisitor):
         self.install_time = install_time
         self.aliases: dict[str, str] = {}
         self.findings: list[Finding] = []
+        self.weak_secrets: list[ast.Constant] = []
 
     # --- helpers -----------------------------------------------------
     def _name(self, node: ast.AST) -> str:
@@ -207,14 +208,24 @@ class _Visitor(ast.NodeVisitor):
 
     def visit_Constant(self, node: ast.Constant):
         if isinstance(node.value, str):
-            hits = sensitive_path_hits(node.value)
-            if hits:
-                self._add(
-                    "PY-SECRET-PATH", "secrets", "high", node, repr(node.value),
-                    f"The code refers to a credential location ({', '.join(hits)}) such as SSH keys, cloud "
-                    "credentials or browser password stores.",
-                    "No ordinary library needs these files. Treat as credential theft.",
-                )
+            kind = classify_secret_string(node.value)
+            if kind == "strong":
+                self._secret(node)
+            elif kind == "weak":
+                self.weak_secrets.append(node)  # counted only if the file also has a strong hit
+
+    def _secret(self, node):
+        self._add(
+            "PY-SECRET-PATH", "secrets", "high", node, repr(node.value),
+            "The code refers to a credential location (such as SSH keys, cloud or npm credentials, or "
+            "browser password stores).",
+            "No ordinary library needs these files. Treat as credential theft.",
+        )
+
+    def finish(self):
+        if any(f.rule_id == "PY-SECRET-PATH" for f in self.findings):
+            for node in self.weak_secrets:
+                self._secret(node)
 
 
 def scan_python(root: Path) -> list[Finding]:
@@ -241,6 +252,7 @@ def scan_python(root: Path) -> list[Finding]:
             continue
         v = _Visitor(rel, install_time)
         v.visit(tree)
+        v.finish()
         file_findings = v.findings + blob_findings(text, rel)
         for f in file_findings:
             f.install_time = install_time

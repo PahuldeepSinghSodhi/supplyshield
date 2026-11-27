@@ -65,6 +65,62 @@ def test_exec_in_library_code_is_medium(tmp_path):
     assert r.verdict == "SAFE"
 
 
+def test_secret_names_in_identifiers_and_file_type_lists_are_ignored(tmp_path):
+    # pygments: a lexer lists 'id_rsa' as a file type; a function is called AreClientCookiesCached
+    r = scan(py_pkg(tmp_path, "FILENAMES = ['id_rsa', 'id_ed25519']\nFUNCS = ['AreClientCookiesCached']\n"
+                              "DOC = 'Lexer for Unix config files using colon-separated values, like /etc/passwd'\n"))
+    assert "PY-SECRET-PATH" not in rules(r)
+
+
+def test_secret_paths_still_detected(tmp_path):
+    for code in ("import os\nk = open(os.path.expanduser('~/.ssh/id_rsa')).read()\n",
+                 "import os\np = os.path.join(os.path.expanduser('~'), '.ssh', 'id_rsa')\n",
+                 "p = r'C:\\Users\\x\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Login Data'\n"):
+        d = tmp_path / str(abs(hash(code)))
+        d.mkdir()
+        assert "PY-SECRET-PATH" in rules(scan(py_pkg(d, code))), code
+
+
+def test_npm_secret_paths(tmp_path):
+    root = write(tmp_path, {"package.json": json.dumps({"name": "s", "version": "1.0.0"}),
+                            "a.js": "const t = fs.readFileSync(os.homedir() + '/.npmrc');\n",
+                            "b.js": "const names = ['Cookies', 'id_rsa'];\n"})
+    files = {f.file for f in scan(root).findings if f.rule_id == "NPM-SECRET-PATH"}
+    assert files == {"a.js"}
+
+
+def test_huge_minified_line_is_fast(tmp_path):
+    # react-dom ships megabyte-long minified lines; the first v0.3 string pattern took over an hour
+    import time
+    line = ("var a='x',b=\"y\",c=`z`;" * 60000) + "\n"
+    root = write(tmp_path, {"package.json": json.dumps({"name": "big", "version": "1.0.0"}), "min.js": line})
+    t0 = time.perf_counter()
+    scan(root)
+    assert time.perf_counter() - t0 < 5
+
+
+def test_update_that_adds_install_script_is_flagged(tmp_path):
+    # real hijacked releases: v_old has no install script, v_new adds "postinstall": "node install.js"
+    from supplyshield.analyzer import diff
+    old = write(tmp_path / "old", {"package.json": json.dumps({"name": "lib", "version": "1.0.0"}),
+                                   "index.js": "module.exports = 1;\n"})
+    new = write(tmp_path / "new", {"package.json": json.dumps({"name": "lib", "version": "1.0.1",
+                                                               "scripts": {"postinstall": "node install.js"}}),
+                                   "index.js": "module.exports = 1;\n", "install.js": "require('./x.node');\n"})
+    _, _, delta = diff(old, new)
+    assert "NEW-INSTALL-CODE" in {f.rule_id for f in delta.findings}
+    assert delta.verdict != "SAFE"
+
+
+def test_update_without_new_install_code_stays_safe(tmp_path):
+    from supplyshield.analyzer import diff
+    old = write(tmp_path / "old", {"package.json": json.dumps({"name": "lib", "version": "1.0.0"}),
+                                   "index.js": "module.exports = 1;\n"})
+    new = write(tmp_path / "new", {"package.json": json.dumps({"name": "lib", "version": "1.1.0"}),
+                                   "index.js": "module.exports = 2;\n"})
+    assert diff(old, new)[2].verdict == "SAFE"
+
+
 # ---- malware patterns v0.1 missed --------------------------------------------------------
 def test_environment_sent_as_text_is_theft(tmp_path):
     # real sample: requests.get(url + os.environ.__str__())

@@ -8,13 +8,34 @@ from importlib import resources
 
 from .models import Finding
 
-# File paths that malware typically reads to steal credentials.
-SENSITIVE_PATHS = (
-    ".ssh", "id_rsa", "id_ed25519", ".aws/credentials", ".aws\\credentials",
-    ".npmrc", ".pypirc", ".git-credentials", ".docker/config.json", ".kube/config",
-    "Login Data", "Local State", "Cookies", "wallet.dat", "/etc/passwd", "/etc/shadow",
-    ".bash_history", "keychain",
-)
+# Credential locations malware reads. v0.1/v0.2 matched these as SUBSTRINGS anywhere in any string,
+# so `pygments` (which names "id_rsa" as a file type and has a function "AreClientCookiesCached")
+# looked like a credential stealer. v0.3 matches whole path parts only:
+#   strong: a credential folder/file inside a path, or a bare credential folder name (".ssh", ".npmrc")
+#   weak:   a bare file name ("id_rsa", "Cookies") - counted only if the same file also has a strong hit,
+#           as in os.path.join(home, ".ssh", "id_rsa")
+STRONG_SECRET_PARTS = {".ssh", ".aws", ".npmrc", ".pypirc", ".git-credentials", ".bash_history", ".docker",
+                       ".kube", ".gnupg", ".netrc", "wallet.dat", "login.keychain-db"}
+WEAK_SECRET_NAMES = {"id_rsa", "id_ed25519", "id_ecdsa", "id_dsa", "login data", "local state", "cookies",
+                     "wallet.dat", "known_hosts", "credentials"}
+SYSTEM_SECRET_FILES = ("/etc/passwd", "/etc/shadow")
+
+
+def classify_secret_string(s: str) -> str | None:
+    """Return 'strong', 'weak' or None for one string literal."""
+    if len(s) > 300 or s.count(" ") > 3:
+        return None  # prose (docstrings, messages), not a path
+    low = s.lower().replace("\\", "/").strip()
+    if any(p in low for p in SYSTEM_SECRET_FILES):
+        return "strong"
+    parts = [p for p in low.split("/") if p]
+    if any(p in STRONG_SECRET_PARTS for p in parts):
+        return "strong"
+    if "/" in low and any(p in WEAK_SECRET_NAMES for p in parts):
+        return "strong"  # e.g. "Default/Login Data", "~/.config/x/credentials"
+    if low in WEAK_SECRET_NAMES:
+        return "weak"
+    return None
 
 _B64_BLOB = re.compile(r"[A-Za-z0-9+/=]{160,}")
 _HEX_BLOB = re.compile(r"(?:\\x[0-9a-fA-F]{2}){40,}")
@@ -75,8 +96,26 @@ def blob_findings(text: str, rel: str) -> list[Finding]:
     return out
 
 
-def sensitive_path_hits(text: str) -> list[str]:
-    return [p for p in SENSITIVE_PATHS if p in text]
+# Simple, linear-time string-literal patterns. (A first version used a back-reference with a lazy
+# repeat, which took over an hour on react-dom's megabyte-long minified lines.)
+_JS_STRINGS = (re.compile(r"'([^'\\\n]{1,300})'"), re.compile(r'"([^"\\\n]{1,300})"'),
+               re.compile(r"`([^`\\]{1,300})`"))
+_SECRET_HINT = re.compile(r"ssh|aws|npmrc|pypirc|git-credentials|bash_history|docker|kube|gnupg|netrc|wallet"
+                          r"|keychain|id_rsa|id_ed25519|id_ecdsa|id_dsa|login data|local state|cookies"
+                          r"|known_hosts|credentials|/etc/", re.I)
+
+
+def js_secret_strings(line: str) -> list[tuple[str, str]]:
+    """(kind, literal) for every string literal on a JavaScript line that names a credential location."""
+    if not _SECRET_HINT.search(line):  # fast path: almost every line
+        return []
+    out = []
+    for rx in _JS_STRINGS:
+        for m in rx.finditer(line):
+            kind = classify_secret_string(m.group(1))
+            if kind:
+                out.append((kind, m.group(1)))
+    return out
 
 
 def edit_distance(a: str, b: str) -> int:

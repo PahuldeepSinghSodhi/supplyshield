@@ -1,0 +1,25 @@
+{
+  "intercept": -1.7751,
+  "weights": {
+    "install_level": 1.3809,
+    "exec_level": -1.1353,
+    "obfuscation_level": 1.6702,
+    "process_level": -0.3272,
+    "network_level": 0.1545,
+    "secrets_level": 1.1342,
+    "typosquat_level": 1.8876,
+    "recon_level": 1.5384,
+    "dependency_level": 0.0,
+    "chain_0": 0.1342,
+    "chain_1": 1.4195,
+    "chain_2": 1.0016,
+    "chain_3": 0.4695,
+    "chain_4": 0.9667
+  },
+  "suspicious_at": 0.1758,
+  "malicious_at": 0.8088,
+  "C": 3.0,
+  "loo_auc": 0.9,
+  "n_train": 79,
+  "n_malicious": 31
+}

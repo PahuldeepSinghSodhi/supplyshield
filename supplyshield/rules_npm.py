@@ -9,7 +9,7 @@ import json
 import re
 from pathlib import Path
 
-from .common import blob_findings, downgrade_non_shipped, sensitive_path_hits, unreadable_finding
+from .common import blob_findings, downgrade_non_shipped, js_secret_strings, unreadable_finding
 from .models import Finding
 
 MAX_FILE_BYTES = 2_000_000
@@ -69,19 +69,23 @@ def _scan_js(path: Path, rel: str, install_time: bool) -> list[Finding]:
         return [unreadable_finding(rel, e)]
     out: list[Finding] = []
     lines = text.splitlines()
+    secret_lines: dict[str, list[tuple[int, str]]] = {"strong": [], "weak": []}
     for lineno, line in enumerate(lines, 1):
         for rule, cat, sev, rx, expl, fix in RULES:
             if rule == "NPM-DYNAMIC-EXEC" and not install_time:
                 sev = "medium"  # eval in library code is often a template/compiler; high at install time
             if rx.search(line):
                 out.append(Finding(rule, cat, sev, rel, lineno, line.strip()[:100], expl, fix, install_time))
-        hits = sensitive_path_hits(line)
-        if hits:
-            out.append(Finding(
-                "NPM-SECRET-PATH", "secrets", "high", rel, lineno, line.strip()[:100],
-                f"The code refers to a credential location ({', '.join(hits)}) such as SSH keys, npm tokens "
-                "or browser password stores.",
-                "No ordinary library needs these files. Treat as credential theft.", install_time))
+        for kind, _ in js_secret_strings(line):
+            secret_lines[kind].append((lineno, line))
+    # Bare file names ("id_rsa", "Cookies") count only next to a real credential path in the same file.
+    hits = secret_lines["strong"] + (secret_lines["weak"] if secret_lines["strong"] else [])
+    for lineno, line in sorted(set(hits)):
+        out.append(Finding(
+            "NPM-SECRET-PATH", "secrets", "high", rel, lineno, line.strip()[:100],
+            "The code refers to a credential location (such as SSH keys, npm tokens or browser password "
+            "stores).",
+            "No ordinary library needs these files. Treat as credential theft.", install_time))
     # Decoding a hidden payload and executing it in the same file.
     if B64_DECODE.search(text) and RULES[1][3].search(text):
         ln = next(i for i, l in enumerate(lines, 1) if B64_DECODE.search(l))

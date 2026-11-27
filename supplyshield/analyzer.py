@@ -53,6 +53,21 @@ def diff(old_path: str | Path, new_path: str | Path, vulns: bool = False) -> tup
             f.new_in_version = True
             introduced.append(f)
 
+    # Learned from real hijacked releases (eslint-config-prettier, cline, ...): the attack usually ADDS an
+    # install script that runs a bundled binary or packed code the rules cannot read. On 20 normal updates
+    # of popular packages no update added one, so a newly added install hook is a strong signal.
+    added_install = [f for f in introduced
+                     if f.rule_id in ("NPM-INSTALL-SCRIPT", "PY-INSTALL-HOOK") and f.severity != "low"]
+    if added_install:
+        f0 = added_install[0]
+        introduced.append(Finding(
+            "NEW-INSTALL-CODE", "install", "high", f0.file, f0.line, f0.evidence,
+            "This update ADDS code that runs automatically during installation; the previous version had "
+            "none. Hijacked releases of genuine packages usually work exactly this way.",
+            "Do not upgrade until the new install code has been reviewed.", install_time=True,
+            new_in_version=True,
+        ))
+
     for dep in sorted(set(new_deps) - set(old_deps)):
         introduced.append(Finding(
             "NEW-DEPENDENCY", "dependency", "low", "(dependencies)", 0, dep,

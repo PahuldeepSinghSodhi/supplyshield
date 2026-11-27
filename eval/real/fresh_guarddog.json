@@ -1,0 +1,322 @@
+[
+  {
+    "key": "poisoned_update/posthog-react-native/4.11.1",
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "posthog-react-native",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "poisoned_update/awaitly-mongo/23.0.1",
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "awaitly-mongo",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "poisoned_update/eslint-config-prettier/9.1.1",
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "eslint-config-prettier",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "poisoned_update/cline/2.3.0",
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "cline",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "poisoned_update/designstudiouiux/1.0.1",
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "designstudiouiux",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "poisoned_update/ngx-bootstrap/20.0.6",
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "ngx-bootstrap",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "poisoned_update/napi-postinstall/0.3.1",
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "napi-postinstall",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "poisoned_update/zapier-async-storage/1.0.2",
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "zapier-async-storage",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "poisoned_update/ember-velcro/2.2.2",
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "ember-velcro",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "poisoned_update/eslint-plugin-executable-stories-playwright/2.1.8",
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "eslint-plugin-executable-stories-playwright",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "poisoned_update/axios/1.14.1",
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "axios",
+    "flagged": true,
+    "detail": "4 issues (npm-api-obfuscation)"
+  },
+  {
+    "key": "poisoned_update/effect-analyzer/0.3.1",
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "effect-analyzer",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "poisoned_update/create-glee-app/0.2.3",
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "create-glee-app",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "poisoned_update/tg-client-query-builder/2.14.4",
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "tg-client-query-builder",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "poisoned_update/eslint-config-prettier/10.1.7",
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "eslint-config-prettier",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "poisoned_update/num2words/0.5.16",
+    "kind": "poisoned_update",
+    "ecosystem": "pypi",
+    "name": "num2words",
+    "flagged": true,
+    "detail": "1 issues (api-obfuscation)"
+  },
+  {
+    "key": "poisoned_update/num2words/0.5.15",
+    "kind": "poisoned_update",
+    "ecosystem": "pypi",
+    "name": "num2words",
+    "flagged": true,
+    "detail": "1 issues (api-obfuscation)"
+  },
+  {
+    "key": "poisoned_update/ppkt2synergy/0.1.1",
+    "kind": "poisoned_update",
+    "ecosystem": "pypi",
+    "name": "ppkt2synergy",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "poisoned_update/ultralytics/8.3.41",
+    "kind": "poisoned_update",
+    "ecosystem": "pypi",
+    "name": "ultralytics",
+    "flagged": true,
+    "detail": "11 issues (shady-links, code-execution, api-obfuscation, scre)"
+  },
+  {
+    "key": "poisoned_update/elementary-data/0.23.3",
+    "kind": "poisoned_update",
+    "ecosystem": "pypi",
+    "name": "elementary-data",
+    "flagged": true,
+    "detail": "1 issues (shady-links)"
+  },
+  {
+    "key": "benign/numpy/2.5.5",
+    "kind": "benign",
+    "ecosystem": "pypi",
+    "name": "numpy",
+    "flagged": null,
+    "detail": "timeout (> 180 s)"
+  },
+  {
+    "key": "benign/botocore/1.44.12",
+    "kind": "benign",
+    "ecosystem": "pypi",
+    "name": "botocore",
+    "flagged": true,
+    "detail": "14 issues (api-obfuscation, shady-links)"
+  },
+  {
+    "key": "benign/anyio/4.16.0",
+    "kind": "benign",
+    "ecosystem": "pypi",
+    "name": "anyio",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "benign/annotated-types/0.8.0",
+    "kind": "benign",
+    "ecosystem": "pypi",
+    "name": "annotated-types",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "benign/pytest/9.2.0",
+    "kind": "benign",
+    "ecosystem": "pypi",
+    "name": "pytest",
+    "flagged": true,
+    "detail": "3 issues (api-obfuscation, obfuscation)"
+  },
+  {
+    "key": "benign/iniconfig/2.3.1",
+    "kind": "benign",
+    "ecosystem": "pypi",
+    "name": "iniconfig",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "benign/typing-inspection/0.4.5",
+    "kind": "benign",
+    "ecosystem": "pypi",
+    "name": "typing-inspection",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "benign/h11/0.16.0",
+    "kind": "benign",
+    "ecosystem": "pypi",
+    "name": "h11",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "benign/attrs/26.1.0",
+    "kind": "benign",
+    "ecosystem": "pypi",
+    "name": "attrs",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "benign/markupsafe/3.0.4",
+    "kind": "benign",
+    "ecosystem": "pypi",
+    "name": "markupsafe",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "benign/react/19.3.1",
+    "kind": "benign",
+    "ecosystem": "npm",
+    "name": "react",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "benign/react-dom/19.3.1",
+    "kind": "benign",
+    "ecosystem": "npm",
+    "name": "react-dom",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "benign/jsesc/3.1.0",
+    "kind": "benign",
+    "ecosystem": "npm",
+    "name": "jsesc",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "benign/call-bound/1.0.4",
+    "kind": "benign",
+    "ecosystem": "npm",
+    "name": "call-bound",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "benign/minimist/1.2.8",
+    "kind": "benign",
+    "ecosystem": "npm",
+    "name": "minimist",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "benign/has-tostringtag/1.0.2",
+    "kind": "benign",
+    "ecosystem": "npm",
+    "name": "has-tostringtag",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "benign/espree/11.2.0",
+    "kind": "benign",
+    "ecosystem": "npm",
+    "name": "espree",
+    "flagged": true,
+    "detail": "2 issues (npm-api-obfuscation)"
+  },
+  {
+    "key": "benign/human-signals/8.0.1",
+    "kind": "benign",
+    "ecosystem": "npm",
+    "name": "human-signals",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "benign/rimraf/6.1.4",
+    "kind": "benign",
+    "ecosystem": "npm",
+    "name": "rimraf",
+    "flagged": false,
+    "detail": "0 issues"
+  },
+  {
+    "key": "benign/body-parser/2.4.0",
+    "kind": "benign",
+    "ecosystem": "npm",
+    "name": "body-parser",
+    "flagged": false,
+    "detail": "0 issues"
+  }
+]

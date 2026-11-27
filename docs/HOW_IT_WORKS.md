@@ -50,26 +50,42 @@ Flagging each one would bury users in false alarms, and ignoring them would miss
 What gives malware away is **several signals together**. To steal passwords, a package must *run at install*,
 *read secrets* **and** *send them over the network*. Together, these have only one realistic purpose.
 
-**Points per finding:** low 3 · medium 10 · high 25 · critical 40 (each rule counts at most twice).
+**Known attack chains** (combinations that have one realistic purpose):
 
-**Bonus for known attack chains:**
+| Combination | Name |
+|---|---|
+| install-time + secrets + network | Install-time data theft |
+| secrets + network | Credential exfiltration |
+| system commands during installation | Install-time command execution |
+| hidden/encoded code + execution | Hidden payload |
+| host fingerprinting during installation | Install-time reconnaissance |
 
-| Combination | Name | Bonus |
+**How much each signal counts was learned from data (v0.3).** v0.1–v0.2 used hand-picked points. v0.3 fits a
+logistic regression on 79 labelled packages (real malware, real popular packages, synthetic samples) and checks
+it with leave-one-out cross-validation ([learn_scoring.py](../eval/real/learn_scoring.py)). What it learned:
+
+| Signal | Weight | Plain meaning |
 |---|---|---|
-| install-time + secrets + network | Install-time data theft | +40 |
-| secrets + network | Credential exfiltration | +25 |
-| system commands during installation | Install-time command execution | +20 |
-| hidden/encoded code + execution | Hidden payload | +20 |
-| host fingerprinting (host name, user name) during installation | Install-time reconnaissance | +20 |
+| Look-alike (typosquat) name | +1.89 | strongest single sign |
+| Hidden / encoded code | +1.67 | |
+| Host fingerprinting | +1.54 | |
+| Code that runs at install time | +1.38 | |
+| Secret access | +1.13 | |
+| Credential-exfiltration chain | +1.42 | combinations matter |
+| Network | +0.15 | almost meaningless alone |
+| System commands | −0.33 | common in honest packages |
+| `exec` / `eval` | −1.14 | *more* common in honest libraries |
 
-**Verdict:** 0–24 **SAFE** · 25–59 **SUSPICIOUS** · 60–100 **MALICIOUS** (score capped at 100).
+The result is shown on the familiar scale: **0–24 SAFE · 25–59 SUSPICIOUS · 60–100 MALICIOUS** (the learned
+thresholds are mapped to 25 and 60). Any **critical** finding (download-and-run, decode-and-execute) is always
+at least MALICIOUS, because it was too rare in the training data for the model to weigh.
 
 **Worked example from the test corpus**
 
 | Package | Findings | Score | Verdict |
 |---|---|---|---|
-| `clean-weatherlite` | network (10) | 10 | ✅ SAFE |
-| `mal-env-harvest` | network (10) + copies all env variables (25) + *credential exfiltration* chain (25) | 60 | 🚨 MALICIOUS |
+| `clean-weatherlite` | one network call | 16 | ✅ SAFE |
+| `mal-env-harvest` | network call + whole environment turned into text + *credential exfiltration* chain | 77 | 🚨 MALICIOUS |
 
 Both contain the same network call. The **combination** separates the harmless one from the thief.
 

@@ -1,0 +1,1325 @@
+[
+  {
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "posthog-react-native",
+    "old": "4.12.4",
+    "new": "4.11.1",
+    "bad_scan": {
+      "verdict": "SAFE",
+      "score": 23,
+      "flagged": false,
+      "rules": [
+        "NPM-INSTALL-SCRIPT",
+        "NPM-NETWORK"
+      ],
+      "unreadable": true
+    },
+    "clean_scan": {
+      "verdict": "SAFE",
+      "score": 10,
+      "flagged": false,
+      "rules": [
+        "NPM-NETWORK"
+      ],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 10,
+      "flagged": false,
+      "rules": [
+        "NPM-INSTALL-SCRIPT"
+      ],
+      "unreadable": false
+    },
+    "diff_findings": [
+      "NPM-INSTALL-SCRIPT package.json"
+    ]
+  },
+  {
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "awaitly-mongo",
+    "old": "23.0.0",
+    "new": "23.0.1",
+    "bad_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "clean_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff_findings": []
+  },
+  {
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "eslint-config-prettier",
+    "old": "10.1.5",
+    "new": "9.1.1",
+    "bad_scan": {
+      "verdict": "SAFE",
+      "score": 13,
+      "flagged": false,
+      "rules": [
+        "NPM-INSTALL-SCRIPT"
+      ],
+      "unreadable": true
+    },
+    "clean_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 10,
+      "flagged": false,
+      "rules": [
+        "NPM-INSTALL-SCRIPT"
+      ],
+      "unreadable": false
+    },
+    "diff_findings": [
+      "NPM-INSTALL-SCRIPT package.json"
+    ]
+  },
+  {
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "cline",
+    "old": "2.2.3",
+    "new": "2.3.0",
+    "bad_scan": {
+      "verdict": "SAFE",
+      "score": 10,
+      "flagged": false,
+      "rules": [
+        "NPM-INSTALL-SCRIPT"
+      ],
+      "unreadable": false
+    },
+    "clean_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 10,
+      "flagged": false,
+      "rules": [
+        "NPM-INSTALL-SCRIPT"
+      ],
+      "unreadable": false
+    },
+    "diff_findings": [
+      "NPM-INSTALL-SCRIPT package.json"
+    ]
+  },
+  {
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "designstudiouiux",
+    "old": "1.0.0",
+    "new": "1.0.1",
+    "bad_scan": {
+      "verdict": "SAFE",
+      "score": 10,
+      "flagged": false,
+      "rules": [
+        "NPM-INSTALL-SCRIPT"
+      ],
+      "unreadable": false
+    },
+    "clean_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 10,
+      "flagged": false,
+      "rules": [
+        "NPM-INSTALL-SCRIPT"
+      ],
+      "unreadable": false
+    },
+    "diff_findings": [
+      "NPM-INSTALL-SCRIPT package.json"
+    ]
+  },
+  {
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "ngx-bootstrap",
+    "old": "20.0.2",
+    "new": "20.0.6",
+    "bad_scan": {
+      "verdict": "SUSPICIOUS",
+      "score": 30,
+      "flagged": true,
+      "rules": [
+        "NPM-INSTALL-SCRIPT",
+        "OBF-BLOB"
+      ],
+      "unreadable": false
+    },
+    "clean_scan": {
+      "verdict": "SAFE",
+      "score": 20,
+      "flagged": false,
+      "rules": [
+        "OBF-BLOB"
+      ],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 10,
+      "flagged": false,
+      "rules": [
+        "NPM-INSTALL-SCRIPT"
+      ],
+      "unreadable": false
+    },
+    "diff_findings": [
+      "NPM-INSTALL-SCRIPT package.json"
+    ]
+  },
+  {
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "napi-postinstall",
+    "old": "0.3.0",
+    "new": "0.3.1",
+    "bad_scan": {
+      "verdict": "SUSPICIOUS",
+      "score": 56,
+      "flagged": true,
+      "rules": [
+        "NPM-INSTALL-SCRIPT",
+        "NPM-NETWORK",
+        "NPM-PROCESS"
+      ],
+      "unreadable": true
+    },
+    "clean_scan": {
+      "verdict": "SUSPICIOUS",
+      "score": 43,
+      "flagged": true,
+      "rules": [
+        "NPM-NETWORK",
+        "NPM-PROCESS"
+      ],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 10,
+      "flagged": false,
+      "rules": [
+        "NPM-INSTALL-SCRIPT"
+      ],
+      "unreadable": false
+    },
+    "diff_findings": [
+      "NPM-INSTALL-SCRIPT package.json"
+    ]
+  },
+  {
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "zapier-async-storage",
+    "old": "1.0.0",
+    "new": "1.0.2",
+    "bad_scan": {
+      "verdict": "SAFE",
+      "score": 13,
+      "flagged": false,
+      "rules": [
+        "NPM-INSTALL-SCRIPT"
+      ],
+      "unreadable": true
+    },
+    "clean_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 10,
+      "flagged": false,
+      "rules": [
+        "NPM-INSTALL-SCRIPT"
+      ],
+      "unreadable": false
+    },
+    "diff_findings": [
+      "NPM-INSTALL-SCRIPT package.json"
+    ]
+  },
+  {
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "ember-velcro",
+    "old": "2.2.0",
+    "new": "2.2.2",
+    "bad_scan": {
+      "verdict": "SAFE",
+      "score": 10,
+      "flagged": false,
+      "rules": [
+        "NPM-INSTALL-SCRIPT"
+      ],
+      "unreadable": false
+    },
+    "clean_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 10,
+      "flagged": false,
+      "rules": [
+        "NPM-INSTALL-SCRIPT"
+      ],
+      "unreadable": false
+    },
+    "diff_findings": [
+      "NPM-INSTALL-SCRIPT package.json"
+    ]
+  },
+  {
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "eslint-plugin-executable-stories-playwright",
+    "old": "2.1.7",
+    "new": "2.1.8",
+    "bad_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "clean_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff_findings": []
+  },
+  {
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "axios",
+    "old": "1.14.0",
+    "new": "1.14.1",
+    "bad_scan": {
+      "verdict": "SAFE",
+      "score": 20,
+      "flagged": false,
+      "rules": [
+        "NPM-NETWORK"
+      ],
+      "unreadable": false
+    },
+    "clean_scan": {
+      "verdict": "SAFE",
+      "score": 20,
+      "flagged": false,
+      "rules": [
+        "NPM-NETWORK"
+      ],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 3,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff_findings": []
+  },
+  {
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "effect-analyzer",
+    "old": "0.3.0",
+    "new": "0.3.1",
+    "bad_scan": {
+      "verdict": "SUSPICIOUS",
+      "score": 30,
+      "flagged": true,
+      "rules": [
+        "NPM-NETWORK",
+        "NPM-PROCESS"
+      ],
+      "unreadable": false
+    },
+    "clean_scan": {
+      "verdict": "SUSPICIOUS",
+      "score": 30,
+      "flagged": true,
+      "rules": [
+        "NPM-NETWORK",
+        "NPM-PROCESS"
+      ],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff_findings": []
+  },
+  {
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "create-glee-app",
+    "old": "0.2.1",
+    "new": "0.2.3",
+    "bad_scan": {
+      "verdict": "SUSPICIOUS",
+      "score": 46,
+      "flagged": true,
+      "rules": [
+        "NPM-INSTALL-SCRIPT",
+        "NPM-NETWORK",
+        "NPM-PROCESS",
+        "NPM-RECON"
+      ],
+      "unreadable": true
+    },
+    "clean_scan": {
+      "verdict": "SUSPICIOUS",
+      "score": 33,
+      "flagged": true,
+      "rules": [
+        "NPM-NETWORK",
+        "NPM-PROCESS",
+        "NPM-RECON"
+      ],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 10,
+      "flagged": false,
+      "rules": [
+        "NPM-INSTALL-SCRIPT"
+      ],
+      "unreadable": false
+    },
+    "diff_findings": [
+      "NPM-INSTALL-SCRIPT package.json"
+    ]
+  },
+  {
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "tg-client-query-builder",
+    "old": "2.14.3",
+    "new": "2.14.4",
+    "bad_scan": {
+      "verdict": "SAFE",
+      "score": 10,
+      "flagged": false,
+      "rules": [
+        "NPM-INSTALL-SCRIPT"
+      ],
+      "unreadable": false
+    },
+    "clean_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 10,
+      "flagged": false,
+      "rules": [
+        "NPM-INSTALL-SCRIPT"
+      ],
+      "unreadable": false
+    },
+    "diff_findings": [
+      "NPM-INSTALL-SCRIPT package.json"
+    ]
+  },
+  {
+    "kind": "poisoned_update",
+    "ecosystem": "npm",
+    "name": "eslint-config-prettier",
+    "old": "10.1.5",
+    "new": "10.1.7",
+    "bad_scan": {
+      "verdict": "SAFE",
+      "score": 13,
+      "flagged": false,
+      "rules": [
+        "NPM-INSTALL-SCRIPT"
+      ],
+      "unreadable": true
+    },
+    "clean_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 10,
+      "flagged": false,
+      "rules": [
+        "NPM-INSTALL-SCRIPT"
+      ],
+      "unreadable": false
+    },
+    "diff_findings": [
+      "NPM-INSTALL-SCRIPT package.json"
+    ]
+  },
+  {
+    "kind": "poisoned_update",
+    "ecosystem": "pypi",
+    "name": "num2words",
+    "old": "0.5.14",
+    "new": "0.5.16",
+    "bad_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "clean_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff_findings": []
+  },
+  {
+    "kind": "poisoned_update",
+    "ecosystem": "pypi",
+    "name": "num2words",
+    "old": "0.5.14",
+    "new": "0.5.15",
+    "bad_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "clean_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff_findings": []
+  },
+  {
+    "kind": "poisoned_update",
+    "ecosystem": "pypi",
+    "name": "ppkt2synergy",
+    "old": "0.1.0",
+    "new": "0.1.1",
+    "bad_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "clean_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff_findings": []
+  },
+  {
+    "kind": "poisoned_update",
+    "ecosystem": "pypi",
+    "name": "ultralytics",
+    "old": "8.3.40",
+    "new": "8.3.41",
+    "bad_scan": {
+      "verdict": "SUSPICIOUS",
+      "score": 52,
+      "flagged": true,
+      "rules": [
+        "PY-DYNAMIC-EXEC",
+        "PY-NETWORK",
+        "PY-PROCESS"
+      ],
+      "unreadable": true
+    },
+    "clean_scan": {
+      "verdict": "SUSPICIOUS",
+      "score": 46,
+      "flagged": true,
+      "rules": [
+        "PY-DYNAMIC-EXEC",
+        "PY-NETWORK",
+        "PY-PROCESS"
+      ],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SUSPICIOUS",
+      "score": 52,
+      "flagged": true,
+      "rules": [
+        "PY-DYNAMIC-EXEC",
+        "PY-NETWORK",
+        "PY-PROCESS"
+      ],
+      "unreadable": true
+    },
+    "diff_findings": [
+      "PY-PROCESS tmp/tmpqwqm_hzo/ultralytics/ultralytics/cfg/__init__.py/ultralytics/cfg/__init__.py",
+      "PY-DYNAMIC-EXEC tmp/tmpqwqm_hzo/ultralytics/ultralytics/cfg/__init__.py/ultralytics/cfg/__init__.py",
+      "PY-DYNAMIC-EXEC tmp/tmpqwqm_hzo/ultralytics/ultralytics/data/loaders.py/ultralytics/data/loaders.py",
+      "PY-NETWORK tmp/tmpqwqm_hzo/ultralytics/ultralytics/data/loaders.py/ultralytics/data/loaders.py",
+      "PY-PROCESS tmp/tmpqwqm_hzo/ultralytics/ultralytics/data/utils.py/ultralytics/data/utils.py",
+      "PY-DYNAMIC-EXEC tmp/tmpqwqm_hzo/ultralytics/ultralytics/data/utils.py/ultralytics/data/utils.py",
+      "PY-PROCESS tmp/tmpqwqm_hzo/ultralytics/ultralytics/data/utils.py/ultralytics/data/utils.py",
+      "PY-PROCESS tmp/tmpqwqm_hzo/ultralytics/ultralytics/engine/exporter.py/ultralytics/engine/exporter.py"
+    ]
+  },
+  {
+    "kind": "poisoned_update",
+    "ecosystem": "pypi",
+    "name": "elementary-data",
+    "old": "0.23.2",
+    "new": "0.23.3",
+    "bad_scan": {
+      "verdict": "SUSPICIOUS",
+      "score": 36,
+      "flagged": true,
+      "rules": [
+        "PY-NETWORK",
+        "PY-PROCESS"
+      ],
+      "unreadable": false
+    },
+    "clean_scan": {
+      "verdict": "SUSPICIOUS",
+      "score": 36,
+      "flagged": true,
+      "rules": [
+        "PY-NETWORK",
+        "PY-PROCESS"
+      ],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SUSPICIOUS",
+      "score": 36,
+      "flagged": true,
+      "rules": [
+        "PY-NETWORK",
+        "PY-PROCESS"
+      ],
+      "unreadable": false
+    },
+    "diff_findings": [
+      "PY-PROCESS tmp/var/folders/rs/52vst_5924nc0zz5ccww9tl80000gp/T/tmp049s67us/elementary-data/elementary/clients/dbt/subprocess_dbt_runner.py",
+      "PY-NETWORK tmp/var/folders/rs/52vst_5924nc0zz5ccww9tl80000gp/T/tmp049s67us/elementary-data/elementary/clients/slack/client.py",
+      "PY-NETWORK tmp/var/folders/rs/52vst_5924nc0zz5ccww9tl80000gp/T/tmp049s67us/elementary-data/elementary/messages/messaging_integrations/teams_webhook.py",
+      "PY-NETWORK tmp/var/folders/rs/52vst_5924nc0zz5ccww9tl80000gp/T/tmp049s67us/elementary-data/elementary/utils/package.py"
+    ]
+  },
+  {
+    "kind": "benign",
+    "ecosystem": "pypi",
+    "name": "numpy",
+    "old": "2.5.4",
+    "new": "2.5.5",
+    "new_scan": {
+      "verdict": "MALICIOUS",
+      "score": 68,
+      "flagged": true,
+      "rules": [
+        "PY-DYNAMIC-EXEC",
+        "PY-NETWORK",
+        "PY-PROCESS",
+        "PY-RECON"
+      ],
+      "unreadable": false
+    },
+    "prev_scan": {
+      "verdict": "MALICIOUS",
+      "score": 68,
+      "flagged": true,
+      "rules": [
+        "PY-DYNAMIC-EXEC",
+        "PY-NETWORK",
+        "PY-PROCESS",
+        "PY-RECON"
+      ],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 3,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    }
+  },
+  {
+    "kind": "benign",
+    "ecosystem": "pypi",
+    "name": "botocore",
+    "old": "1.44.11",
+    "new": "1.44.12",
+    "new_scan": {
+      "verdict": "MALICIOUS",
+      "score": 100,
+      "flagged": true,
+      "rules": [
+        "PY-DYNAMIC-EXEC",
+        "PY-NETWORK",
+        "PY-SECRET-PATH"
+      ],
+      "unreadable": false
+    },
+    "prev_scan": {
+      "verdict": "MALICIOUS",
+      "score": 100,
+      "flagged": true,
+      "rules": [
+        "PY-DYNAMIC-EXEC",
+        "PY-NETWORK",
+        "PY-SECRET-PATH"
+      ],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    }
+  },
+  {
+    "kind": "benign",
+    "ecosystem": "pypi",
+    "name": "anyio",
+    "old": "4.15.1",
+    "new": "4.16.0",
+    "new_scan": {
+      "verdict": "SUSPICIOUS",
+      "score": 39,
+      "flagged": true,
+      "rules": [
+        "PY-DYNAMIC-EXEC",
+        "PY-NETWORK"
+      ],
+      "unreadable": false
+    },
+    "prev_scan": {
+      "verdict": "SUSPICIOUS",
+      "score": 39,
+      "flagged": true,
+      "rules": [
+        "PY-DYNAMIC-EXEC",
+        "PY-NETWORK"
+      ],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 3,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    }
+  },
+  {
+    "kind": "benign",
+    "ecosystem": "pypi",
+    "name": "annotated-types",
+    "old": "0.7.0",
+    "new": "0.8.0",
+    "new_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "prev_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    }
+  },
+  {
+    "kind": "benign",
+    "ecosystem": "pypi",
+    "name": "pytest",
+    "old": "9.1.1",
+    "new": "9.2.0",
+    "new_scan": {
+      "verdict": "SUSPICIOUS",
+      "score": 55,
+      "flagged": true,
+      "rules": [
+        "PY-DYNAMIC-EXEC",
+        "PY-NETWORK",
+        "PY-PROCESS",
+        "PY-RECON"
+      ],
+      "unreadable": false
+    },
+    "prev_scan": {
+      "verdict": "SUSPICIOUS",
+      "score": 55,
+      "flagged": true,
+      "rules": [
+        "PY-DYNAMIC-EXEC",
+        "PY-NETWORK",
+        "PY-PROCESS",
+        "PY-RECON"
+      ],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 16,
+      "flagged": false,
+      "rules": [
+        "PY-PROCESS"
+      ],
+      "unreadable": false
+    }
+  },
+  {
+    "kind": "benign",
+    "ecosystem": "pypi",
+    "name": "iniconfig",
+    "old": "2.3.0",
+    "new": "2.3.1",
+    "new_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "prev_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    }
+  },
+  {
+    "kind": "benign",
+    "ecosystem": "pypi",
+    "name": "typing-inspection",
+    "old": "0.4.4",
+    "new": "0.4.5",
+    "new_scan": {
+      "verdict": "SAFE",
+      "score": 20,
+      "flagged": false,
+      "rules": [
+        "PY-DYNAMIC-EXEC"
+      ],
+      "unreadable": false
+    },
+    "prev_scan": {
+      "verdict": "SAFE",
+      "score": 20,
+      "flagged": false,
+      "rules": [
+        "PY-DYNAMIC-EXEC"
+      ],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    }
+  },
+  {
+    "kind": "benign",
+    "ecosystem": "pypi",
+    "name": "h11",
+    "old": "0.15.0",
+    "new": "0.16.0",
+    "new_scan": {
+      "verdict": "MALICIOUS",
+      "score": 62,
+      "flagged": true,
+      "rules": [
+        "PY-DYNAMIC-EXEC",
+        "PY-SETUP-CODE"
+      ],
+      "unreadable": false
+    },
+    "prev_scan": {
+      "verdict": "MALICIOUS",
+      "score": 62,
+      "flagged": true,
+      "rules": [
+        "PY-DYNAMIC-EXEC",
+        "PY-SETUP-CODE"
+      ],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    }
+  },
+  {
+    "kind": "benign",
+    "ecosystem": "pypi",
+    "name": "attrs",
+    "old": "25.4.0",
+    "new": "26.1.0",
+    "new_scan": {
+      "verdict": "SAFE",
+      "score": 23,
+      "flagged": false,
+      "rules": [
+        "PY-DYNAMIC-EXEC"
+      ],
+      "unreadable": false
+    },
+    "prev_scan": {
+      "verdict": "SAFE",
+      "score": 23,
+      "flagged": false,
+      "rules": [
+        "PY-DYNAMIC-EXEC"
+      ],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    }
+  },
+  {
+    "kind": "benign",
+    "ecosystem": "pypi",
+    "name": "markupsafe",
+    "old": "3.0.3",
+    "new": "3.0.4",
+    "new_scan": {
+      "verdict": "SUSPICIOUS",
+      "score": 25,
+      "flagged": true,
+      "rules": [
+        "PY-INSTALL-HOOK"
+      ],
+      "unreadable": false
+    },
+    "prev_scan": {
+      "verdict": "SUSPICIOUS",
+      "score": 25,
+      "flagged": true,
+      "rules": [
+        "PY-INSTALL-HOOK"
+      ],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    }
+  },
+  {
+    "kind": "benign",
+    "ecosystem": "npm",
+    "name": "react",
+    "old": "19.3.0",
+    "new": "19.3.1",
+    "new_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "prev_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    }
+  },
+  {
+    "kind": "benign",
+    "ecosystem": "npm",
+    "name": "react-dom",
+    "old": "19.3.0",
+    "new": "19.3.1",
+    "new_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "prev_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    }
+  },
+  {
+    "kind": "benign",
+    "ecosystem": "npm",
+    "name": "jsesc",
+    "old": "3.0.2",
+    "new": "3.1.0",
+    "new_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "prev_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    }
+  },
+  {
+    "kind": "benign",
+    "ecosystem": "npm",
+    "name": "call-bound",
+    "old": "1.0.3",
+    "new": "1.0.4",
+    "new_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "prev_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    }
+  },
+  {
+    "kind": "benign",
+    "ecosystem": "npm",
+    "name": "minimist",
+    "old": "0.2.3",
+    "new": "1.2.8",
+    "new_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "prev_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    }
+  },
+  {
+    "kind": "benign",
+    "ecosystem": "npm",
+    "name": "has-tostringtag",
+    "old": "1.0.1",
+    "new": "1.0.2",
+    "new_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "prev_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 3,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    }
+  },
+  {
+    "kind": "benign",
+    "ecosystem": "npm",
+    "name": "espree",
+    "old": "11.1.1",
+    "new": "11.2.0",
+    "new_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "prev_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    }
+  },
+  {
+    "kind": "benign",
+    "ecosystem": "npm",
+    "name": "human-signals",
+    "old": "8.0.0",
+    "new": "8.0.1",
+    "new_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "prev_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    }
+  },
+  {
+    "kind": "benign",
+    "ecosystem": "npm",
+    "name": "rimraf",
+    "old": "6.1.3",
+    "new": "6.1.4",
+    "new_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "prev_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    }
+  },
+  {
+    "kind": "benign",
+    "ecosystem": "npm",
+    "name": "body-parser",
+    "old": "1.20.9",
+    "new": "2.4.0",
+    "new_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "prev_scan": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    },
+    "diff": {
+      "verdict": "SAFE",
+      "score": 0,
+      "flagged": false,
+      "rules": [],
+      "unreadable": false
+    }
+  }
+]
